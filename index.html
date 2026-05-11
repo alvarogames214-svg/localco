@@ -31,7 +31,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'DM Sans', sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
@@ -247,20 +247,25 @@ header {
 .search-wrap {
   padding: 16px 16px 8px;
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.search-wrap i {
+.search-wrap .search-icon {
   position: absolute;
   left: 28px;
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-muted);
   font-size: 14px;
+  pointer-events: none;
+  margin-top: 4px;
 }
 
 .search-input {
-  width: 100%;
-  padding: 13px 16px 13px 42px;
+  flex: 1;
+  padding: 13px 50px 13px 42px;
   border-radius: var(--radius-md);
   border: 1.5px solid var(--border);
   background: var(--surface);
@@ -276,6 +281,58 @@ header {
 .search-input:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(232,82,10,0.12);
+}
+
+/* Voice button inside the input */
+.voice-btn {
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-top: 4px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(232,82,10,0.35);
+  z-index: 2;
+}
+
+.voice-btn:hover  { background: #c93e00; box-shadow: 0 4px 14px rgba(232,82,10,0.45); }
+.voice-btn:active { transform: translateY(-50%) scale(0.92); }
+
+/* Listening state */
+.voice-btn.listening {
+  background: #D93025;
+  animation: voicePulse 1s ease-in-out infinite;
+}
+
+@keyframes voicePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(217,48,37,0.5); }
+  50%       { box-shadow: 0 0 0 8px rgba(217,48,37,0); }
+}
+
+/* Ripple ring while listening */
+.voice-btn.listening::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid rgba(217,48,37,0.4);
+  animation: voiceRing 1s ease-out infinite;
+}
+
+@keyframes voiceRing {
+  0%   { transform: scale(0.85); opacity:1; }
+  100% { transform: scale(1.5);  opacity:0; }
 }
 
 /* ── CATEGORIES ── */
@@ -330,21 +387,34 @@ header {
   align-items: center;
   justify-content: center;
   font-size: 20px;
-  transition: all 0.25s;
   border: 2px solid transparent;
+  animation: floatIcon 3s ease-in-out infinite;
 }
+
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0px);   box-shadow: 0 4px 10px rgba(0,0,0,0.07); }
+  50%       { transform: translateY(-6px); box-shadow: 0 10px 22px rgba(0,0,0,0.13); }
+}
+
+.categories .category:nth-child(1) .cat-icon { animation-delay: 0.0s; }
+.categories .category:nth-child(2) .cat-icon { animation-delay: 0.35s; }
+.categories .category:nth-child(3) .cat-icon { animation-delay: 0.70s; }
+.categories .category:nth-child(4) .cat-icon { animation-delay: 1.05s; }
+.categories .category:nth-child(5) .cat-icon { animation-delay: 1.40s; }
+.categories .category:nth-child(6) .cat-icon { animation-delay: 1.75s; }
+
+.category:active .cat-icon { animation-play-state: paused; }
 
 .cat-label {
   font-size: 11px;
   font-weight: 600;
-  color: var(--text-muted), black;
+  color: var(--text-muted) black;
   text-align: center;
   transition: color 0.2s;
 }
 
 .category.active .cat-label { color: var(--primary); }
 .category.active .cat-icon {
-  transform: translateY(-3px);
   border-color: var(--primary);
   box-shadow: 0 6px 16px rgba(232,82,10,0.2);
 }
@@ -503,12 +573,49 @@ header {
   to   { transform: translateY(0); }
 }
 
+.modal-handle-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 12px 16px 4px;
+}
+
 .modal-handle {
   width: 40px;
   height: 4px;
   background: #ddd;
   border-radius: 2px;
-  margin: 10px auto 0;
+}
+
+.modal-close-btn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #f0f0f0;
+  color: #aaa;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.25s, color 0.25s, transform 0.2s, box-shadow 0.25s;
+}
+
+.modal-close-btn:hover {
+  background: #FFE8E8;
+  color: #D93025;
+  transform: translateY(-50%) scale(1.12);
+  box-shadow: 0 0 0 4px rgba(217,48,37,0.12);
+}
+
+.modal-close-btn:active {
+  transform: translateY(-50%) scale(0.93);
 }
 
 .modal-img {
@@ -528,7 +635,7 @@ header {
 }
 
 .modal-body { padding: 18px 20px 30px; }
-.modal-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.modal-title { font-family: Arial, Helvetica, sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 4px; }
 .modal-cat { font-size: 12px; font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
 .modal-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 18px; }
 
@@ -1105,8 +1212,11 @@ header {
 
 <!-- SEARCH -->
 <div class="search-wrap">
-  <i class="fas fa-search"></i>
-  <input class="search-input" id="searchInput" placeholder="Buscar negocio, servicio…">
+  <i class="fas fa-search search-icon"></i>
+  <input class="search-input" id="searchInput" placeholder="¿Qué buscas hoy en Cali?">
+  <button class="voice-btn" id="voiceBtn" title="Buscar por voz">
+    <i class="fas fa-microphone" id="voiceIcon"></i>
+  </button>
 </div>
 
 <!-- CATEGORIES -->
@@ -1157,7 +1267,7 @@ header {
 
 <!-- ÚLTIMO MINUTO -->
 <div class="section-header" style="margin-top:8px;">
-  <span class="section-title">⚡ Último minuto</span>
+  <span class="section-title">⚡ Novedades</span>
 </div>
 <div class="noticias-section" id="noticiasSection">
   <div class="noticia-card oferta" data-noticia>
@@ -1205,7 +1315,12 @@ header {
 <!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
   <div class="modal" id="modal">
-    <div class="modal-handle"></div>
+    <div class="modal-handle-row">
+      <div class="modal-handle"></div>
+      <button class="modal-close-btn" onclick="document.getElementById('modalOverlay').classList.remove('open'); document.body.style.overflow='';" title="Cerrar">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
     <div id="modalImgWrap"></div>
     <div class="modal-body">
       <div class="modal-cat" id="modalCat"></div>
@@ -1607,6 +1722,80 @@ function closeEnVivoOutside(e) {
     });
   }, { threshold: 0.15 });
   cards.forEach(c => observer.observe(c));
+})();
+
+// ── VOICE SEARCH ──
+(function() {
+  const btn   = document.getElementById('voiceBtn');
+  const icon  = document.getElementById('voiceIcon');
+  const input = document.getElementById('searchInput');
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    btn.title = 'Tu navegador no soporta búsqueda por voz';
+    btn.style.opacity = '0.45';
+    btn.style.cursor  = 'not-allowed';
+    btn.onclick = () => showToast('⚠️ Navegador sin soporte de voz');
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang           = 'es-CO';
+  recognition.continuous     = false;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+
+  let listening = false;
+
+  function startListening() {
+    listening = true;
+    btn.classList.add('listening');
+    icon.className = 'fas fa-stop';
+    input.placeholder = '🎙️ Escuchando…';
+    input.value = '';
+    recognition.start();
+    showToast('🎙️ Habla ahora…');
+  }
+
+  function stopListening() {
+    listening = false;
+    btn.classList.remove('listening');
+    icon.className = 'fas fa-microphone';
+    input.placeholder = '¿Qué buscas hoy en Cali?';
+    recognition.stop();
+  }
+
+  btn.addEventListener('click', () => {
+    listening ? stopListening() : startListening();
+  });
+
+  recognition.addEventListener('result', e => {
+    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+    input.value = transcript;
+    const val = transcript.toLowerCase().trim();
+    const base = activeFilter ? data.filter(d => d.cat === activeFilter) : data;
+    const filtered = val
+      ? base.filter(d => d.name.toLowerCase().includes(val) || d.desc.toLowerCase().includes(val) || d.cat.includes(val))
+      : base;
+    render(filtered);
+  });
+
+  recognition.addEventListener('end', () => {
+    if (listening) stopListening();
+    if (input.value) showToast(`🔍 Buscando: "${input.value}"`);
+  });
+
+  recognition.addEventListener('error', e => {
+    stopListening();
+    const msgs = {
+      'no-speech'    : '🤫 No se detectó voz, intenta de nuevo',
+      'not-allowed'  : '🚫 Permiso de micrófono denegado',
+      'network'      : '📡 Error de red, revisa tu conexión',
+      'audio-capture': '🎤 No se encontró micrófono',
+    };
+    showToast(msgs[e.error] || '❌ Error de voz: ' + e.error);
+  });
 })();
 
 (function() {
