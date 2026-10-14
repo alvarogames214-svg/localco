@@ -67,6 +67,20 @@ const auth      = getAuth(fbApp);
 const db        = getFirestore(fbApp);
 const gProvider = new GoogleAuthProvider();
 
+// Capturar resultado del redirect al volver de Google
+import { getRedirectResult } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+getRedirectResult(auth).then(result => {
+  if (result?.user) {
+    showToast(`👋 ¡Hola, ${result.user.displayName.split(' ')[0]}!`);
+  }
+}).catch(e => {
+  if (e.code !== 'auth/popup-closed-by-user')
+    console.warn('Redirect error:', e);
+});
+
+
+
 async function saveFavsCloud(uid, favs) {
   try { await setDoc(doc(db,'users',uid), { favorites: favs }, { merge:true }); }
   catch(e) { console.warn('Firestore write:', e); }
@@ -83,15 +97,20 @@ async function loadFavsCloud(uid) {
 window._fbSignInGoogle = async function() {
   try {
     document.getElementById('googleBtn')?.classList.add('loading');
-    document.body.style.overflow = ''; // ← asegura que el popup pueda mostrarse
-    await signInWithPopup(auth, gProvider);
+    document.body.style.overflow = '';
+
+    // Usar redirect en vez de popup — no requiere permisos de popup
+    const { signInWithRedirect } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    await signInWithRedirect(auth, gProvider);
+
   } catch(e) {
     document.getElementById('googleBtn')?.classList.remove('loading');
-    document.body.style.overflow = ''; // ← limpia también en error
+    document.body.style.overflow = '';
     if (e.code !== 'auth/popup-closed-by-user')
       showToast('❌ Error al iniciar sesión');
   }
 };
+
 
 window._fbSignOut = async function() {
   await signOut(auth);
