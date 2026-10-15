@@ -2062,20 +2062,19 @@ function render(list) {
   }).join('');
 }
 
-// Ejemplo de tu función filterCategory modificada
-function filterCategory(categoryName, element) {
-    // Verificar el estado de la sesión antes de proceder
-    if (!window._fbUser) {
-        // El usuario NO está logueado. 
-        // En lugar de redirigir, abre el panel de perfil/login
-        openProfile(); // Asumiendo que esta es tu función para abrir el panel lateral
-        showToast('Debes iniciar sesión para explorar esta categoría');
-        return; // Detiene la ejecución de la función
-    }
+function filterCategory(cat, el) {
+  activeFilter = cat;
+  document.querySelectorAll('.category').forEach(c => c.classList.remove('active'));
+  if (el) el.classList.add('active');
+  else document.querySelector('[data-cat="todos"]').classList.add('active');
 
-    // Si llega aquí, el usuario SÍ está logueado. Continuar con la acción normal.
-    // ... tu lógica para filtrar y renderizar (e.g., render(data.filter(...))) ...
-    console.log("Filtrando por categoría:", categoryName);
+  const title = cat
+    ? data.find(d=>d.cat===cat)?.cat.charAt(0).toUpperCase() + cat.slice(1) + ' cerca de ti'
+    : 'Cerca de ti';
+  document.getElementById('sectionTitle').textContent = title;
+
+  const filtered = cat ? data.filter(d => d.cat === cat) : data;
+  render(filtered);
 }
 
 function showFavs() {
