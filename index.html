@@ -11,7 +11,7 @@
 
 <title>Conexión Local</title>
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="estilo.css?v=202612">
+<link rel="stylesheet" href="estilo.css?v=202611">
 <meta name="theme-color" content="#E8520A">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -48,10 +48,10 @@
 </head>
 
 <script type="module">
-import { initializeApp }                                              from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithRedirect,
-         getRedirectResult, signOut, onAuthStateChanged }            from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, setDoc, getDoc }                         from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { initializeApp }                          from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+                                                  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, setDoc, getDoc }      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey:            "AIzaSyAigNSYEwYQIYp0H5Gut35MlUjmxAvcsmQ",
@@ -67,90 +67,52 @@ const auth      = getAuth(fbApp);
 const db        = getFirestore(fbApp);
 const gProvider = new GoogleAuthProvider();
 
-// ── Capturar resultado del redirect al volver de Google ──
-getRedirectResult(auth).then(result => {
-  if (result?.user) {
-    showToast(`👋 ¡Hola, ${result.user.displayName.split(' ')[0]}!`);
-  }
-}).catch(e => {
-  console.warn('Redirect result error:', e);
-});
-
-// ── Firestore helpers ──
 async function saveFavsCloud(uid, favs) {
-  try { await setDoc(doc(db, 'users', uid), { favorites: favs }, { merge: true }); }
+  try { await setDoc(doc(db,'users',uid), { favorites: favs }, { merge:true }); }
   catch(e) { console.warn('Firestore write:', e); }
 }
 
 async function loadFavsCloud(uid) {
   try {
-    const snap = await getDoc(doc(db, 'users', uid));
+    const snap = await getDoc(doc(db,'users',uid));
     if (snap.exists() && snap.data().favorites) return snap.data().favorites;
   } catch(e) { console.warn('Firestore read:', e); }
   return null;
 }
 
-// ── Login con redirect (sin popup, sin bloqueos) ──
 window._fbSignInGoogle = async function() {
   try {
-    document.getElementById('googleBtn')?.classList.add('loading');
-    document.body.style.overflow = '';
-    await signInWithRedirect(auth, gProvider);
+    document.getElementById('googleBtn').classList.add('loading');
+    await signInWithPopup(auth, gProvider);
   } catch(e) {
-    document.getElementById('googleBtn')?.classList.remove('loading');
-    document.body.style.overflow = '';
-    showToast('❌ Error al iniciar sesión');
-    console.warn('SignIn error:', e);
+    document.getElementById('googleBtn').classList.remove('loading');
+    if (e.code !== 'auth/popup-closed-by-user')
+      showToast('❌ Error al iniciar sesión');
   }
 };
 
-// ── Logout ──
 window._fbSignOut = async function() {
   await signOut(auth);
   showToast('👋 Sesión cerrada');
 };
 
-// ── Sync favoritos ──
 window._fbSaveFavs = function(uid, favs) { saveFavsCloud(uid, favs); };
 
-// ── Detectar cambio de sesión ──
 onAuthStateChanged(auth, async (user) => {
-    window._fbUser = user || null;
-    
-    if (user) {
-        // --- 1. EL USUARIO ESTÁ LOGUEADO ---
-        console.log("Sesión confirmada:", user.email);
-
-        // Ocultar el Soft Gate / Modal de Login
-        document.getElementById('profileOverlay').style.display = 'none'; // O la clase que uses para ocultarlo
-        document.getElementById('viewLoggedOut').classList.remove('active');
-        document.getElementById('viewLoggedIn').classList.add('active');
-
-        // (Opcional) Cargar favoritos y sincronizar
-        const cloudFavs = await loadFavsCloud(user.uid);
-        if (cloudFavs) {
-            const merged = [...new Set([...favorites, ...cloudFavs])];
-            favorites.length = 0;
-            merged.forEach(f => favorites.push(f));
-            localStorage.setItem('cl_fav', JSON.stringify(favorites));
-            // render() // Asegúrate de que tu función render sepa qué hacer aquí
-        }
-
-        // Llamar a la actualización de UI visual (Avatar, nombre, etc.)
-        if (typeof window._fbUpdateProfileUI === 'function') {
-            window._fbUpdateProfileUI(user);
-        }
-
-    } else {
-        // --- 2. EL USUARIO NO ESTÁ LOGUEADO ---
-        console.log("No hay sesión activa.");
-        
-        // Mostrar el Soft Gate / Modal de Login
-        document.getElementById('viewLoggedIn').classList.remove('active');
-        document.getElementById('viewLoggedOut').classList.add('active');
-        // Aquí podrías mostrar el modal de forzado si es un "Hard Gate", 
-        // pero si es "Soft", solo lo muestras cuando hagan una acción específica.
+  window._fbUser = user || null;
+  if (user) {
+    const cloudFavs = await loadFavsCloud(user.uid);
+    if (cloudFavs) {
+      const merged = [...new Set([...favorites, ...cloudFavs])];
+      favorites.length = 0;
+      merged.forEach(f => favorites.push(f));
+      localStorage.setItem('cl_fav', JSON.stringify(favorites));
+      render(activeFilter ? data.filter(d => d.cat === activeFilter) : data);
     }
+    showToast(`👋 ¡Hola, ${user.displayName.split(' ')[0]}!`);
+  }
+  if (typeof window._fbUpdateProfileUI === 'function')
+    window._fbUpdateProfileUI(user);
 });
 </script>
 
@@ -2518,124 +2480,6 @@ function closeProfileOutside(e) {
   if (e.target === document.getElementById('profileOverlay')) closeProfile();
 }
 
-// ── SOFT GATE ──
-const SG_KEY = 'cl_sg_skipped'; // recuerda si ya lo vio
-
-function showSoftgate() {
-  document.getElementById('softgateOverlay').classList.add('visible');
-}
-
-function hideSoftgate() {
-  document.getElementById('softgateOverlay').classList.remove('visible');
-}
-
-function softgateLogin() {
-  // 1. Ocultar el softgate
-  hideSoftgate();
-
-  // 2. Asegurar que el body NO tenga overflow hidden antes del popup
-  document.body.style.overflow = '';
-
-  // 3. NO abrir el panel de perfil — disparar Google directamente
-  if (typeof window._fbSignInGoogle === 'function') {
-    // Pequeño delay para que el DOM se estabilice antes del popup
-    setTimeout(() => {
-      window._fbSignInGoogle();
-    }, 150);
-  } else {
-    // Fallback: abrir el panel de perfil si Firebase no está listo aún
-    openProfile();
-  }
-}
-
-function softgateSkip() {
-  hideSoftgate();
-  sessionStorage.setItem(SG_KEY, '1');
-  applyLockedFeatures(); // aplica los candados
-}
-
-function applyLockedFeatures() {
-  if (window._fbUser) return; // con sesión: sin restricciones
-
-  // Bloquear botón de favoritos en cards
-  document.querySelectorAll('.fav-btn').forEach(btn => {
-    btn.onclick = (e) => {
-      e.stopPropagation();
-      showSoftgate();
-    };
-  });
-
-  // Bloquear botón Oportunidades en nav
-  const navOp = document.getElementById('navOportunidades');
-  if (navOp) {
-    navOp.onclick = (e) => {
-      e.stopPropagation();
-      showSoftgate();
-    };
-  }
-
-  // Bloquear botón de descarga PWA
-  const btnInstall = document.getElementById('btn-install');
-  if (btnInstall) {
-    btnInstall.classList.add('locked-feature');
-    btnInstall.onclick = (e) => {
-      e.stopPropagation();
-      showSoftgate();
-    };
-  }
-}
-
-function unlockFeatures() {
-  // Limpiar el gate inmediatamente
-  sessionStorage.removeItem(SG_KEY);
-  hideSoftgate();
-
-  // Esperar a que el DOM tenga las cards renderizadas
-  setTimeout(() => {
-    // Restaurar favoritos
-    document.querySelectorAll('.fav-btn').forEach(btn => {
-      const id = parseInt(btn.getAttribute('data-fav'));
-      if (id) btn.onclick = (e) => toggleFav(id, e);
-    });
-
-    // Restaurar Oportunidades
-    const navOp = document.getElementById('navOportunidades');
-    if (navOp) navOp.onclick = () => goToOportunidades();
-
-    // Restaurar PWA
-    const btnInstall = document.getElementById('btn-install');
-    if (btnInstall) {
-      btnInstall.classList.remove('locked-feature');
-      btnInstall.onclick = null;
-    }
-
-    // Restaurar WhatsApp en modal si está abierto
-    const waBtn = document.getElementById('modalWA');
-    if (waBtn) {
-      waBtn.onclick = null;
-      waBtn.style.opacity = '';
-    }
-  }, 500);
-}
-
-// Bloquear WhatsApp dentro del modal
-const _origOpenModal = openModal;
-window.openModal = function(id) {
-  _origOpenModal(id);
-  if (!window._fbUser) {
-    const waBtn = document.getElementById('modalWA');
-    if (waBtn) {
-      waBtn.onclick = (e) => {
-        e.preventDefault();
-        showSoftgate();
-      };
-      waBtn.style.opacity = '0.5';
-    }
-  }
-};
-
-
-
 // Actualiza el panel según el estado de Firebase
 window._fbUpdateProfileUI = function(user) {
   const out = document.getElementById('viewLoggedOut');
@@ -2892,22 +2736,6 @@ function goToOportunidades() {
       headerLogo.addEventListener('click', goHome);
       headerLogo.setAttribute('title', 'Ir al Inicio');
     }
-
-
-     // ── SOFT GATE — mostrar después de 6 segundos si no hay sesión ──
-  setTimeout(() => {
-    if (!window._fbUser && !sessionStorage.getItem(SG_KEY)) {
-      showSoftgate();
-    }
-  }, 6000);
-
-  // DESPUÉS — espera a Firebase antes de decidir:
-  setTimeout(() => {
-  if (sessionStorage.getItem(SG_KEY) && !window._fbUser) {
-    applyLockedFeatures();
-    }
-  }, 1500); // Firebase suele resolver onAuthStateChanged en ~500-1000ms
-
   });
 
   // Teclado para galería
@@ -3297,7 +3125,6 @@ document.addEventListener('DOMContentLoaded', () => {
       </button>`;
     toast.classList.add('show');
   }); */
-
   
 </script>
 
