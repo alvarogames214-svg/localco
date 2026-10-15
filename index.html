@@ -48,10 +48,10 @@
 </head>
 
 <script type="module">
-import { initializeApp }                          from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
-                                                  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, setDoc, getDoc }      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { initializeApp }                                              from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithRedirect,
+         getRedirectResult, signOut, onAuthStateChanged }            from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, setDoc, getDoc }                         from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey:            "AIzaSyAigNSYEwYQIYp0H5Gut35MlUjmxAvcsmQ",
@@ -67,60 +67,56 @@ const auth      = getAuth(fbApp);
 const db        = getFirestore(fbApp);
 const gProvider = new GoogleAuthProvider();
 
-// Capturar resultado del redirect al volver de Google
-import { getRedirectResult } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-
+// ── Capturar resultado del redirect al volver de Google ──
 getRedirectResult(auth).then(result => {
   if (result?.user) {
     showToast(`👋 ¡Hola, ${result.user.displayName.split(' ')[0]}!`);
   }
 }).catch(e => {
-  if (e.code !== 'auth/popup-closed-by-user')
-    console.warn('Redirect error:', e);
+  console.warn('Redirect result error:', e);
 });
 
-
-
+// ── Firestore helpers ──
 async function saveFavsCloud(uid, favs) {
-  try { await setDoc(doc(db,'users',uid), { favorites: favs }, { merge:true }); }
+  try { await setDoc(doc(db, 'users', uid), { favorites: favs }, { merge: true }); }
   catch(e) { console.warn('Firestore write:', e); }
 }
 
 async function loadFavsCloud(uid) {
   try {
-    const snap = await getDoc(doc(db,'users',uid));
+    const snap = await getDoc(doc(db, 'users', uid));
     if (snap.exists() && snap.data().favorites) return snap.data().favorites;
   } catch(e) { console.warn('Firestore read:', e); }
   return null;
 }
 
+// ── Login con redirect (sin popup, sin bloqueos) ──
 window._fbSignInGoogle = async function() {
   try {
     document.getElementById('googleBtn')?.classList.add('loading');
     document.body.style.overflow = '';
-
-    // Usar redirect en vez de popup — no requiere permisos de popup
-    const { signInWithRedirect } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
     await signInWithRedirect(auth, gProvider);
-
   } catch(e) {
     document.getElementById('googleBtn')?.classList.remove('loading');
     document.body.style.overflow = '';
-    if (e.code !== 'auth/popup-closed-by-user')
-      showToast('❌ Error al iniciar sesión');
+    showToast('❌ Error al iniciar sesión');
+    console.warn('SignIn error:', e);
   }
 };
 
-
+// ── Logout ──
 window._fbSignOut = async function() {
   await signOut(auth);
   showToast('👋 Sesión cerrada');
 };
 
+// ── Sync favoritos ──
 window._fbSaveFavs = function(uid, favs) { saveFavsCloud(uid, favs); };
 
+// ── Detectar cambio de sesión ──
 onAuthStateChanged(auth, async (user) => {
   window._fbUser = user || null;
+
   if (user) {
     const cloudFavs = await loadFavsCloud(user.uid);
     if (cloudFavs) {
@@ -131,12 +127,8 @@ onAuthStateChanged(auth, async (user) => {
       render(activeFilter ? data.filter(d => d.cat === activeFilter) : data);
     }
     showToast(`👋 ¡Hola, ${user.displayName.split(' ')[0]}!`);
-
-
-     // Desbloquear todo al iniciar sesión
     if (typeof unlockFeatures === 'function') unlockFeatures();
     sessionStorage.removeItem(SG_KEY);
-    
   }
 
   if (typeof window._fbUpdateProfileUI === 'function')
