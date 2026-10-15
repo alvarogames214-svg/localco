@@ -11,7 +11,7 @@
 
 <title>Conexión Local</title>
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="estilo.css?v=202611">
+<link rel="stylesheet" href="estilo.css?v=202612">
 <meta name="theme-color" content="#E8520A">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -98,21 +98,31 @@ window._fbSignOut = async function() {
 
 window._fbSaveFavs = function(uid, favs) { saveFavsCloud(uid, favs); };
 
-onAuthStateChanged(auth, async (user) => {
-  window._fbUser = user || null;
-  if (user) {
-    const cloudFavs = await loadFavsCloud(user.uid);
-    if (cloudFavs) {
-      const merged = [...new Set([...favorites, ...cloudFavs])];
-      favorites.length = 0;
-      merged.forEach(f => favorites.push(f));
-      localStorage.setItem('cl_fav', JSON.stringify(favorites));
-      render(activeFilter ? data.filter(d => d.cat === activeFilter) : data);
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        // EL USUARIO SÍ TIENE CUENTA Y ESTÁ LOGUEADO
+        isUserLoggedIn = true;
+        clearTimeout(softgateTimer); // Cancela el temporizador de 6s
+        softgateSkip();              // Oculta el modal por si estaba abierto
+        
+        // (Opcional) Quitar los candados visuales de la interfaz
+        document.querySelectorAll('.is-locked').forEach(el => {
+            el.classList.remove('is-locked');
+        });
+    } else {
+        // EL USUARIO ES INVITADO (NO LOGUEADO)
+        isUserLoggedIn = false;
+        
+        // Verifica si ya le dio a "Explorar sin cuenta" en esta sesión
+        const hasSkipped = sessionStorage.getItem('softgateSkipped');
+        
+        // Si no lo ha saltado, activa el temporizador de 6 segundos
+        if (!hasSkipped) {
+            softgateTimer = setTimeout(() => {
+                showSoftGate();
+            }, 6000); // 6000 ms = 6 segundos
+        }
     }
-    showToast(`👋 ¡Hola, ${user.displayName.split(' ')[0]}!`);
-  }
-  if (typeof window._fbUpdateProfileUI === 'function')
-    window._fbUpdateProfileUI(user);
 });
 </script>
 
@@ -314,7 +324,7 @@ onAuthStateChanged(auth, async (user) => {
     <div class="cat-icon cat-todos"><i class="fas fa-th"></i></div>
     <span class="cat-label">Todos</span>
   </div>
-  <div class="category" data-cat="comida" onclick="filterCategory('comida', this)">
+  <div class="category restricted-action is-locked" data-cat="comida" onclick="filterCategory('comida', this)">
     <div class="cat-icon cat-comida"><i class="fas fa-utensils"></i></div>
     <span class="cat-label">Comida</span>
   </div>
@@ -3091,6 +3101,57 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loader) loader.classList.add('hidden');
   }, 800);
 });
+
+
+
+// Variables globales de control
+let isUserLoggedIn = false; 
+let softgateTimer;
+
+// Función para mostrar el modal
+function showSoftGate() {
+    if (isUserLoggedIn) return; // Seguro contra falsos positivos
+    document.getElementById('softgateOverlay').classList.add('active');
+    document.body.classList.add('modal-open');
+}
+
+// Función para ocultar el modal (Botón "Explorar sin cuenta")
+function softgateSkip() {
+    document.getElementById('softgateOverlay').classList.remove('active');
+    document.body.classList.remove('modal-open');
+    // Guardamos en sesión para que los 6 segundos no lo vuelvan a molestar si recarga la página
+    sessionStorage.setItem('softgateSkipped', 'true'); 
+}
+
+// Función conectada a tu botón de Google
+function softgateLogin() {
+    // Aquí llamas a la función que ya tienes en tu proyecto para iniciar sesión
+    // Ejemplo: loginConGoogle()
+    // Si tienes importado signInWithPopup, colócalo aquí.
+    
+    iniciarSesionConGoogle(); // Reemplaza con el nombre real de tu función de login
+}
+
+// --- INTERCEPTOR DE CLICS (CANDADOS) ---
+document.addEventListener('DOMContentLoaded', () => {
+    // Busca todos los elementos a los que les pongas la clase 'restricted-action'
+    const restrictedElements = document.querySelectorAll('.restricted-action');
+
+    restrictedElements.forEach(el => {
+        el.addEventListener('click', (e) => {
+            // Si NO está logueado, bloquea la acción
+            if (!isUserLoggedIn) {
+                e.preventDefault();   // Evita que vaya al link o abra WhatsApp
+                e.stopPropagation();  // Evita que otros scripts se ejecuten
+                showSoftGate();       // Abre el modal inmediatamente
+            }
+        });
+    });
+});
+
+
+
+
 
 // ── NOTIFICACIÓN DE ACTUALIZACIÓN ──
 /*if ('serviceWorker' in navigator) {

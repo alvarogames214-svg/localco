@@ -2897,3 +2897,110 @@ body.dark .op-card-placeholder {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* --- SOFT GATE OVERLAY --- */
+.softgate-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px); /* Desenfoque de fondo */
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999; /* Por encima de todo */
+  
+  /* Oculto por defecto con animación */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Clase para activar el modal */
+.softgate-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* --- CONTENEDOR DEL MODAL --- */
+.softgate-modal {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 30px 25px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  
+  /* Animación de deslizamiento hacia arriba */
+  transform: translateY(30px);
+  transition: transform 0.3s ease;
+}
+
+.softgate-overlay.active .softgate-modal {
+  transform: translateY(0);
+}
+
+/* --- TIPOGRAFÍA Y ELEMENTOS --- */
+.softgate-icon { font-size: 40px; margin-bottom: 10px; }
+.softgate-title { font-family: 'Syne', sans-serif; font-size: 22px; color: #111; margin: 0 0 10px; font-weight: 700; }
+.softgate-desc { font-family: 'DM Sans', sans-serif; font-size: 15px; color: #555; margin-bottom: 25px; line-height: 1.5; }
+.softgate-desc strong { color: #000; }
+
+/* --- BOTONES --- */
+.softgate-google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  margin-bottom: 12px;
+}
+.softgate-google-btn:hover { background: #f8f9fa; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+
+.softgate-skip-btn {
+  background: none;
+  border: none;
+  color: #6c757d;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 10px;
+  margin-bottom: 5px;
+  transition: color 0.2s;
+}
+.softgate-skip-btn:hover { color: #111; }
+
+.softgate-note { font-family: 'DM Sans', sans-serif; font-size: 12px; color: #aaa; margin: 0; }
+
+/* Bloquea el scroll de la página cuando el modal está abierto */
+body.modal-open { overflow: hidden; }
+
+/* --- CANDADO VISUAL (OPCIONAL) --- */
+/* Si agregas esta clase a un botón, le pondrá un candadito en la esquina */
+.is-locked { position: relative; }
+.is-locked::after {
+  content: '🔒';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 14px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
