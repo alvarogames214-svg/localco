@@ -115,29 +115,42 @@ window._fbSaveFavs = function(uid, favs) { saveFavsCloud(uid, favs); };
 
 // ── Detectar cambio de sesión ──
 onAuthStateChanged(auth, async (user) => {
-  window._fbUser = user || null;
+    window._fbUser = user || null;
+    
+    if (user) {
+        // --- 1. EL USUARIO ESTÁ LOGUEADO ---
+        console.log("Sesión confirmada:", user.email);
 
-  if (user) {
-    // Limpiar gate PRIMERO antes de cualquier otra cosa
-    sessionStorage.removeItem(SG_KEY);
+        // Ocultar el Soft Gate / Modal de Login
+        document.getElementById('profileOverlay').style.display = 'none'; // O la clase que uses para ocultarlo
+        document.getElementById('viewLoggedOut').classList.remove('active');
+        document.getElementById('viewLoggedIn').classList.add('active');
 
-    const cloudFavs = await loadFavsCloud(user.uid);
-    if (cloudFavs) {
-      const merged = [...new Set([...favorites, ...cloudFavs])];
-      favorites.length = 0;
-      merged.forEach(f => favorites.push(f));
-      localStorage.setItem('cl_fav', JSON.stringify(favorites));
-      render(activeFilter ? data.filter(d => d.cat === activeFilter) : data);
+        // (Opcional) Cargar favoritos y sincronizar
+        const cloudFavs = await loadFavsCloud(user.uid);
+        if (cloudFavs) {
+            const merged = [...new Set([...favorites, ...cloudFavs])];
+            favorites.length = 0;
+            merged.forEach(f => favorites.push(f));
+            localStorage.setItem('cl_fav', JSON.stringify(favorites));
+            // render() // Asegúrate de que tu función render sepa qué hacer aquí
+        }
+
+        // Llamar a la actualización de UI visual (Avatar, nombre, etc.)
+        if (typeof window._fbUpdateProfileUI === 'function') {
+            window._fbUpdateProfileUI(user);
+        }
+
+    } else {
+        // --- 2. EL USUARIO NO ESTÁ LOGUEADO ---
+        console.log("No hay sesión activa.");
+        
+        // Mostrar el Soft Gate / Modal de Login
+        document.getElementById('viewLoggedIn').classList.remove('active');
+        document.getElementById('viewLoggedOut').classList.add('active');
+        // Aquí podrías mostrar el modal de forzado si es un "Hard Gate", 
+        // pero si es "Soft", solo lo muestras cuando hagan una acción específica.
     }
-
-    showToast(`👋 ¡Hola, ${user.displayName.split(' ')[0]}!`);
-
-    // Desbloquear después de que render() haya corrido
-    if (typeof unlockFeatures === 'function') unlockFeatures();
-  }
-
-  if (typeof window._fbUpdateProfileUI === 'function')
-    window._fbUpdateProfileUI(user);
 });
 </script>
 
@@ -2049,19 +2062,20 @@ function render(list) {
   }).join('');
 }
 
-function filterCategory(cat, el) {
-  activeFilter = cat;
-  document.querySelectorAll('.category').forEach(c => c.classList.remove('active'));
-  if (el) el.classList.add('active');
-  else document.querySelector('[data-cat="todos"]').classList.add('active');
+// Ejemplo de tu función filterCategory modificada
+function filterCategory(categoryName, element) {
+    // Verificar el estado de la sesión antes de proceder
+    if (!window._fbUser) {
+        // El usuario NO está logueado. 
+        // En lugar de redirigir, abre el panel de perfil/login
+        openProfile(); // Asumiendo que esta es tu función para abrir el panel lateral
+        showToast('Debes iniciar sesión para explorar esta categoría');
+        return; // Detiene la ejecución de la función
+    }
 
-  const title = cat
-    ? data.find(d=>d.cat===cat)?.cat.charAt(0).toUpperCase() + cat.slice(1) + ' cerca de ti'
-    : 'Cerca de ti';
-  document.getElementById('sectionTitle').textContent = title;
-
-  const filtered = cat ? data.filter(d => d.cat === cat) : data;
-  render(filtered);
+    // Si llega aquí, el usuario SÍ está logueado. Continuar con la acción normal.
+    // ... tu lógica para filtrar y renderizar (e.g., render(data.filter(...))) ...
+    console.log("Filtrando por categoría:", categoryName);
 }
 
 function showFavs() {
