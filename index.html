@@ -118,6 +118,9 @@ onAuthStateChanged(auth, async (user) => {
   window._fbUser = user || null;
 
   if (user) {
+    // Limpiar gate PRIMERO antes de cualquier otra cosa
+    sessionStorage.removeItem(SG_KEY);
+
     const cloudFavs = await loadFavsCloud(user.uid);
     if (cloudFavs) {
       const merged = [...new Set([...favorites, ...cloudFavs])];
@@ -126,9 +129,11 @@ onAuthStateChanged(auth, async (user) => {
       localStorage.setItem('cl_fav', JSON.stringify(favorites));
       render(activeFilter ? data.filter(d => d.cat === activeFilter) : data);
     }
+
     showToast(`👋 ¡Hola, ${user.displayName.split(' ')[0]}!`);
+
+    // Desbloquear después de que render() haya corrido
     if (typeof unlockFeatures === 'function') unlockFeatures();
-    sessionStorage.removeItem(SG_KEY);
   }
 
   if (typeof window._fbUpdateProfileUI === 'function')
@@ -2568,24 +2573,36 @@ function applyLockedFeatures() {
 }
 
 function unlockFeatures() {
-  // Restaurar favoritos
-  document.querySelectorAll('.fav-btn').forEach(btn => {
-    const id = parseInt(btn.getAttribute('data-fav'));
-    if (id) btn.onclick = (e) => toggleFav(id, e);
-  });
-
-  // Restaurar Oportunidades
-  const navOp = document.getElementById('navOportunidades');
-  if (navOp) navOp.onclick = () => goToOportunidades();
-
-  // Restaurar PWA
-  const btnInstall = document.getElementById('btn-install');
-  if (btnInstall) {
-    btnInstall.classList.remove('locked-feature');
-    btnInstall.onclick = null; // el IIFE de PWA maneja esto
-  }
-
+  // Limpiar el gate inmediatamente
+  sessionStorage.removeItem(SG_KEY);
   hideSoftgate();
+
+  // Esperar a que el DOM tenga las cards renderizadas
+  setTimeout(() => {
+    // Restaurar favoritos
+    document.querySelectorAll('.fav-btn').forEach(btn => {
+      const id = parseInt(btn.getAttribute('data-fav'));
+      if (id) btn.onclick = (e) => toggleFav(id, e);
+    });
+
+    // Restaurar Oportunidades
+    const navOp = document.getElementById('navOportunidades');
+    if (navOp) navOp.onclick = () => goToOportunidades();
+
+    // Restaurar PWA
+    const btnInstall = document.getElementById('btn-install');
+    if (btnInstall) {
+      btnInstall.classList.remove('locked-feature');
+      btnInstall.onclick = null;
+    }
+
+    // Restaurar WhatsApp en modal si está abierto
+    const waBtn = document.getElementById('modalWA');
+    if (waBtn) {
+      waBtn.onclick = null;
+      waBtn.style.opacity = '';
+    }
+  }, 500);
 }
 
 // Bloquear WhatsApp dentro del modal
@@ -2871,11 +2888,12 @@ function goToOportunidades() {
     }
   }, 6000);
 
-  // Aplicar candados si ya saltó el gate antes
+  // DESPUÉS — espera a Firebase antes de decidir:
+  setTimeout(() => {
   if (sessionStorage.getItem(SG_KEY) && !window._fbUser) {
     applyLockedFeatures();
-  }
-
+    }
+  }, 1500); // Firebase suele resolver onAuthStateChanged en ~500-1000ms
 
   });
 
