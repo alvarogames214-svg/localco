@@ -98,29 +98,52 @@ window._fbSignOut = async function() {
 
 window._fbSaveFavs = function(uid, favs) { saveFavsCloud(uid, favs); };
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
+    // 1. ACTUALIZAMOS LA VARIABLE GLOBAL ORIGINAL DE TU PROYECTO
+    // Esto es fundamental para que el "interceptor de clics" sepa si bloquear o no
+    window._fbUser = user || null; 
+
     if (user) {
-        // EL USUARIO SÍ TIENE CUENTA Y ESTÁ LOGUEADO
-        isUserLoggedIn = true;
-        clearTimeout(softgateTimer); // Cancela el temporizador de 6s
-        softgateSkip();              // Oculta el modal por si estaba abierto
+        // --- EL USUARIO ESTÁ LOGUEADO ---
         
-        // (Opcional) Quitar los candados visuales de la interfaz
+        // 2. Limpieza del Soft Gate
+        if (typeof softgateTimer !== 'undefined') {
+            clearTimeout(softgateTimer); // Cancela el temporizador de 6s
+        }
+        
+        // Oculta el modal por si estaba abierto (más seguro que llamar a softgateSkip aquí)
+        const overlay = document.getElementById('softgateOverlay');
+        if (overlay) overlay.classList.remove('active');
+        document.body.classList.remove('modal-open');
+        
+        // Quitar los candados visuales de la interfaz
         document.querySelectorAll('.is-locked').forEach(el => {
             el.classList.remove('is-locked');
         });
+
+        // 3. TU CÓDIGO ORIGINAL DE FAVORITOS (Se mantiene intacto)
+        const cloudFavs = await loadFavsCloud(user.uid);
+        if (cloudFavs) {
+            const merged = [...new Set([...favorites, ...cloudFavs])];
+            favorites.length = 0;
+            merged.forEach(f => favorites.push(f));
+            localStorage.setItem('cl_fav', JSON.stringify(favorites));
+            
+            // Asegúrate de que si tenías render() o similar aquí, lo mantengas
+            if (typeof render === 'function') render();
+        }
+
     } else {
-        // EL USUARIO ES INVITADO (NO LOGUEADO)
-        isUserLoggedIn = false;
+        // --- EL USUARIO ES INVITADO (NO LOGUEADO) ---
         
         // Verifica si ya le dio a "Explorar sin cuenta" en esta sesión
         const hasSkipped = sessionStorage.getItem('softgateSkipped');
         
         // Si no lo ha saltado, activa el temporizador de 6 segundos
-        if (!hasSkipped) {
+        if (!hasSkipped && typeof showSoftGate === 'function') {
             softgateTimer = setTimeout(() => {
                 showSoftGate();
-            }, 6000); // 6000 ms = 6 segundos
+            }, 6000); 
         }
     }
 });
@@ -3104,13 +3127,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-// Variables globales de control
-let isUserLoggedIn = false; 
+// --- VARIABLES DEL SOFT GATE ---
 let softgateTimer;
 
 // Función para mostrar el modal
 function showSoftGate() {
-    if (isUserLoggedIn) return; // Seguro contra falsos positivos
+    // Preguntamos directamente al objeto global que crea tu código original
+    if (window._fbUser) return; // Si hay usuario, no mostramos el modal
     document.getElementById('softgateOverlay').classList.add('active');
     document.body.classList.add('modal-open');
 }
@@ -3119,42 +3142,35 @@ function showSoftGate() {
 function softgateSkip() {
     document.getElementById('softgateOverlay').classList.remove('active');
     document.body.classList.remove('modal-open');
-    // Guardamos en sesión para que los 6 segundos no lo vuelvan a molestar si recarga la página
     sessionStorage.setItem('softgateSkipped', 'true'); 
 }
 
-
-
 // Función conectada a tu botón de Google
 function softgateLogin() {
-    // Cerramos visualmente el modal del soft gate
     document.getElementById('softgateOverlay').classList.remove('active');
     document.body.classList.remove('modal-open');
-    
-    // Llamamos a tu función global de Firebase que ya está configurada
     if (typeof window._fbSignInGoogle === 'function') {
         window._fbSignInGoogle();
-    } else {
-        console.error("No se encontró la función _fbSignInGoogle. Asegúrate de que Firebase cargó correctamente.");
-        // Opcional: Mostrar un mensaje al usuario
-        if(typeof showToast === 'function') showToast('❌ Error: Servicio no disponible');
     }
 }
-// --- INTERCEPTOR DE CLICS (CANDADOS) ---
-document.addEventListener('DOMContentLoaded', () => {
-    // Busca todos los elementos a los que les pongas la clase 'restricted-action'
-    const restrictedElements = document.querySelectorAll('.restricted-action');
 
-    restrictedElements.forEach(el => {
-        el.addEventListener('click', (e) => {
-            // Si NO está logueado, bloquea la acción
-            if (!isUserLoggedIn) {
-                e.preventDefault();   // Evita que vaya al link o abra WhatsApp
-                e.stopPropagation();  // Evita que otros scripts se ejecuten
-                showSoftGate();       // Abre el modal inmediatamente
+// --- INTERCEPTOR DE CLICS SEGURO ---
+document.addEventListener('DOMContentLoaded', () => {
+    // Usamos delegación de eventos en el documento (es más seguro para elementos dinámicos)
+    document.body.addEventListener('click', (e) => {
+        // Busca si el clic se hizo en un elemento con la clase .restricted-action o dentro de él
+        const restrictedElement = e.target.closest('.restricted-action');
+        
+        if (restrictedElement) {
+            // VERIFICACIÓN DIRECTA: ¿Hay un usuario de Firebase activo?
+            // Tu código original guarda el usuario en window._fbUser
+            if (!window._fbUser) {
+                e.preventDefault();
+                e.stopPropagation();
+                showSoftGate();
             }
-        });
-    });
+        }
+    }, true); // El "true" es importante, captura el evento antes de que se propague (fase de captura)
 });
 
 
