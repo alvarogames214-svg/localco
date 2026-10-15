@@ -324,7 +324,7 @@ onAuthStateChanged(auth, (user) => {
     <div class="cat-icon cat-todos"><i class="fas fa-th"></i></div>
     <span class="cat-label">Todos</span>
   </div>
-  <div class="category restricted-action is-locked" data-cat="comida" onclick="filterCategory('comida', this)">
+  <div class="category" data-cat="comida" onclick="filterCategory('comida', this)">
     <div class="cat-icon cat-comida"><i class="fas fa-utensils"></i></div>
     <span class="cat-label">Comida</span>
   </div>
@@ -547,11 +547,11 @@ onAuthStateChanged(auth, (user) => {
 
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav" aria-label="Navegación principal">
-  <button class="nav-item active" id="navInicio" onclick="goHome()" aria-label="Inicio"><i class="fas fa-home" aria-hidden="true"></i><span>Inicio</span></button>
-  <button class="nav-item" id="navExplorar" onclick="goToExplorar()" aria-label="Explorar"><i class="fas fa-compass" aria-hidden="true"></i><span>Explorar</span></button>
-  <button class="nav-item" id="navFavoritos" onclick="showFavsNav()" aria-label="Favoritos"><i class="fas fa-heart" aria-hidden="true"></i><span>Favoritos</span></button>
-  <button class="nav-item" id="navNoticias" onclick="goToNoticias()" aria-label="Noticias"><i class="fas fa-newspaper" aria-hidden="true"></i><span>Noticias</span></button>
-  <button class="nav-item" id="navOportunidades" onclick="goToOportunidades()" aria-label="Oportunidades"><i class="fas fa-briefcase" aria-hidden="true"></i><span>Oportunidades</span></button>
+  <button class="nav-item active " id="navInicio" onclick="goHome()" aria-label="Inicio"><i class="fas fa-home" aria-hidden="true"></i><span>Inicio</span></button>
+  <button class="nav-item restricted-action is-locked" id="navExplorar" onclick="goToExplorar()" aria-label="Explorar"><i class="fas fa-compass" aria-hidden="true"></i><span>Explorar</span></button>
+  <button class="nav-item restricted-action is-locked" id="navFavoritos" onclick="showFavsNav()" aria-label="Favoritos"><i class="fas fa-heart" aria-hidden="true"></i><span>Favoritos</span></button>
+  <button class="nav-item restricted-action is-locked" id="navNoticias" onclick="goToNoticias()" aria-label="Noticias"><i class="fas fa-newspaper" aria-hidden="true"></i><span>Noticias</span></button>
+  <button class="nav-item restricted-action is-locked" id="navOportunidades" onclick="goToOportunidades()" aria-label="Oportunidades"><i class="fas fa-briefcase" aria-hidden="true"></i><span>Oportunidades</span></button>
 </nav>
 
 <!-- PROFILE / LOGIN PANEL -->
@@ -3123,15 +3123,23 @@ function softgateSkip() {
     sessionStorage.setItem('softgateSkipped', 'true'); 
 }
 
+
+
 // Función conectada a tu botón de Google
 function softgateLogin() {
-    // Aquí llamas a la función que ya tienes en tu proyecto para iniciar sesión
-    // Ejemplo: loginConGoogle()
-    // Si tienes importado signInWithPopup, colócalo aquí.
+    // Cerramos visualmente el modal del soft gate
+    document.getElementById('softgateOverlay').classList.remove('active');
+    document.body.classList.remove('modal-open');
     
-    iniciarSesionConGoogle(); // Reemplaza con el nombre real de tu función de login
+    // Llamamos a tu función global de Firebase que ya está configurada
+    if (typeof window._fbSignInGoogle === 'function') {
+        window._fbSignInGoogle();
+    } else {
+        console.error("No se encontró la función _fbSignInGoogle. Asegúrate de que Firebase cargó correctamente.");
+        // Opcional: Mostrar un mensaje al usuario
+        if(typeof showToast === 'function') showToast('❌ Error: Servicio no disponible');
+    }
 }
-
 // --- INTERCEPTOR DE CLICS (CANDADOS) ---
 document.addEventListener('DOMContentLoaded', () => {
     // Busca todos los elementos a los que les pongas la clase 'restricted-action'
