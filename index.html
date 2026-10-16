@@ -115,13 +115,12 @@ window._fbSaveFavs = function(uid, favs) { saveFavsCloud(uid, favs); };
 
 // ── Detectar cambio de sesión ──
 onAuthStateChanged(auth, async (user) => {
-  firebaseReady = true;
+  firebaseReady = true;  // ← debe ser la primera línea
   window._fbUser = user || null;
 
   if (user) {
-    // Limpiar gate PRIMERO antes de cualquier otra cosa
-    sessionStorage.removeItem(SG_KEY);
-
+    sessionStorage.removeItem(SG_KEY);  // ← antes de todo
+    
     const cloudFavs = await loadFavsCloud(user.uid);
     if (cloudFavs) {
       const merged = [...new Set([...favorites, ...cloudFavs])];
@@ -132,8 +131,6 @@ onAuthStateChanged(auth, async (user) => {
     }
 
     showToast(`👋 ¡Hola, ${user.displayName.split(' ')[0]}!`);
-
-    // Desbloquear después de que render() haya corrido
     if (typeof unlockFeatures === 'function') unlockFeatures();
   }
 
