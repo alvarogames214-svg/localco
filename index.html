@@ -48,10 +48,10 @@
 </head>
 
 <script type="module">
-import { initializeApp }                          from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
-                                                  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, setDoc, getDoc }      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { initializeApp }                                              from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithRedirect,
+         getRedirectResult, signOut, onAuthStateChanged }            from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, setDoc, getDoc }                         from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey:            "AIzaSyAigNSYEwYQIYp0H5Gut35MlUjmxAvcsmQ",
@@ -67,85 +67,78 @@ const auth      = getAuth(fbApp);
 const db        = getFirestore(fbApp);
 const gProvider = new GoogleAuthProvider();
 
+// ── Capturar resultado del redirect al volver de Google ──
+getRedirectResult(auth).then(result => {
+  if (result?.user) {
+    showToast(`👋 ¡Hola, ${result.user.displayName.split(' ')[0]}!`);
+  }
+}).catch(e => {
+  console.warn('Redirect result error:', e);
+});
+
+// ── Firestore helpers ──
 async function saveFavsCloud(uid, favs) {
-  try { await setDoc(doc(db,'users',uid), { favorites: favs }, { merge:true }); }
+  try { await setDoc(doc(db, 'users', uid), { favorites: favs }, { merge: true }); }
   catch(e) { console.warn('Firestore write:', e); }
 }
 
 async function loadFavsCloud(uid) {
   try {
-    const snap = await getDoc(doc(db,'users',uid));
+    const snap = await getDoc(doc(db, 'users', uid));
     if (snap.exists() && snap.data().favorites) return snap.data().favorites;
   } catch(e) { console.warn('Firestore read:', e); }
   return null;
 }
 
+// ── Login con redirect (sin popup, sin bloqueos) ──
 window._fbSignInGoogle = async function() {
   try {
-    document.getElementById('googleBtn').classList.add('loading');
-    await signInWithPopup(auth, gProvider);
+    document.getElementById('googleBtn')?.classList.add('loading');
+    document.body.style.overflow = '';
+    await signInWithRedirect(auth, gProvider);
   } catch(e) {
-    document.getElementById('googleBtn').classList.remove('loading');
-    if (e.code !== 'auth/popup-closed-by-user')
-      showToast('❌ Error al iniciar sesión');
+    document.getElementById('googleBtn')?.classList.remove('loading');
+    document.body.style.overflow = '';
+    showToast('❌ Error al iniciar sesión');
+    console.warn('SignIn error:', e);
   }
 };
 
+// ── Logout ──
 window._fbSignOut = async function() {
   await signOut(auth);
   showToast('👋 Sesión cerrada');
 };
 
+// ── Sync favoritos ──
 window._fbSaveFavs = function(uid, favs) { saveFavsCloud(uid, favs); };
 
+// ── Detectar cambio de sesión ──
 onAuthStateChanged(auth, async (user) => {
-    // 1. ACTUALIZAMOS LA VARIABLE GLOBAL ORIGINAL DE TU PROYECTO
-    // Esto es fundamental para que el "interceptor de clics" sepa si bloquear o no
-    window._fbUser = user || null; 
+  firebaseReady = true;
+  window._fbUser = user || null;
 
-    if (user) {
-        // --- EL USUARIO ESTÁ LOGUEADO ---
-        
-        // 2. Limpieza del Soft Gate
-        if (typeof softgateTimer !== 'undefined') {
-            clearTimeout(softgateTimer); // Cancela el temporizador de 6s
-        }
-        
-        // Oculta el modal por si estaba abierto (más seguro que llamar a softgateSkip aquí)
-        const overlay = document.getElementById('softgateOverlay');
-        if (overlay) overlay.classList.remove('active');
-        document.body.classList.remove('modal-open');
-        
-        // Quitar los candados visuales de la interfaz
-        document.querySelectorAll('.is-locked').forEach(el => {
-            el.classList.remove('is-locked');
-        });
+  if (user) {
+    // Limpiar gate PRIMERO antes de cualquier otra cosa
+    sessionStorage.removeItem(SG_KEY);
 
-        // 3. TU CÓDIGO ORIGINAL DE FAVORITOS (Se mantiene intacto)
-        const cloudFavs = await loadFavsCloud(user.uid);
-        if (cloudFavs) {
-            const merged = [...new Set([...favorites, ...cloudFavs])];
-            favorites.length = 0;
-            merged.forEach(f => favorites.push(f));
-            localStorage.setItem('cl_fav', JSON.stringify(favorites));
-            
-            // Asegúrate de que si tenías render() o similar aquí, lo mantengas
-            if (typeof render === 'function') render();
-        }
-
-    } else {
-        // --- EL USUARIO ES INVITADO (NO LOGUEADO) ---
-        
-        // Verifica si ya le dio a "Explorar sin cuenta" en esta sesión
-        const hasSkipped = sessionStorage.getItem('softgateSkipped');
-        
-        // Si no lo ha saltado, activa el temporizador de 6 segundos
-        if (!hasSkipped && typeof showSoftGate === 'function') {
-            softgateTimer = setTimeout(() => {
-                showSoftGate();
-            }, 6000); 
-        }
+    const cloudFavs = await loadFavsCloud(user.uid);
+    if (cloudFavs) {
+      const merged = [...new Set([...favorites, ...cloudFavs])];
+      favorites.length = 0;
+      merged.forEach(f => favorites.push(f));
+      localStorage.setItem('cl_fav', JSON.stringify(favorites));
+      render(activeFilter ? data.filter(d => d.cat === activeFilter) : data);
     }
+
+    showToast(`👋 ¡Hola, ${user.displayName.split(' ')[0]}!`);
+
+    // Desbloquear después de que render() haya corrido
+    if (typeof unlockFeatures === 'function') unlockFeatures();
+  }
+
+  if (typeof window._fbUpdateProfileUI === 'function')
+    window._fbUpdateProfileUI(user);
 });
 </script>
 
@@ -570,11 +563,11 @@ onAuthStateChanged(auth, async (user) => {
 
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav" aria-label="Navegación principal">
-  <button class="nav-item active " id="navInicio" onclick="goHome()" aria-label="Inicio"><i class="fas fa-home" aria-hidden="true"></i><span>Inicio</span></button>
-  <button class="nav-item restricted-action is-locked" id="navExplorar" onclick="goToExplorar()" aria-label="Explorar"><i class="fas fa-compass" aria-hidden="true"></i><span>Explorar</span></button>
-  <button class="nav-item restricted-action is-locked" id="navFavoritos" onclick="showFavsNav()" aria-label="Favoritos"><i class="fas fa-heart" aria-hidden="true"></i><span>Favoritos</span></button>
-  <button class="nav-item restricted-action is-locked" id="navNoticias" onclick="goToNoticias()" aria-label="Noticias"><i class="fas fa-newspaper" aria-hidden="true"></i><span>Noticias</span></button>
-  <button class="nav-item restricted-action is-locked" id="navOportunidades" onclick="goToOportunidades()" aria-label="Oportunidades"><i class="fas fa-briefcase" aria-hidden="true"></i><span>Oportunidades</span></button>
+  <button class="nav-item active" id="navInicio" onclick="goHome()" aria-label="Inicio"><i class="fas fa-home" aria-hidden="true"></i><span>Inicio</span></button>
+  <button class="nav-item" id="navExplorar" onclick="goToExplorar()" aria-label="Explorar"><i class="fas fa-compass" aria-hidden="true"></i><span>Explorar</span></button>
+  <button class="nav-item" id="navFavoritos" onclick="showFavsNav()" aria-label="Favoritos"><i class="fas fa-heart" aria-hidden="true"></i><span>Favoritos</span></button>
+  <button class="nav-item" id="navNoticias" onclick="goToNoticias()" aria-label="Noticias"><i class="fas fa-newspaper" aria-hidden="true"></i><span>Noticias</span></button>
+  <button class="nav-item" id="navOportunidades" onclick="goToOportunidades()" aria-label="Oportunidades"><i class="fas fa-briefcase" aria-hidden="true"></i><span>Oportunidades</span></button>
 </nav>
 
 <!-- PROFILE / LOGIN PANEL -->
@@ -2513,6 +2506,125 @@ function closeProfileOutside(e) {
   if (e.target === document.getElementById('profileOverlay')) closeProfile();
 }
 
+// ── SOFT GATE ──
+const SG_KEY = 'cl_sg_skipped'; // recuerda si ya lo vio
+let firebaseReady = false;
+
+function showSoftgate() {
+  document.getElementById('softgateOverlay').classList.add('visible');
+}
+
+function hideSoftgate() {
+  document.getElementById('softgateOverlay').classList.remove('visible');
+}
+
+function softgateLogin() {
+  // 1. Ocultar el softgate
+  hideSoftgate();
+
+  // 2. Asegurar que el body NO tenga overflow hidden antes del popup
+  document.body.style.overflow = '';
+
+  // 3. NO abrir el panel de perfil — disparar Google directamente
+  if (typeof window._fbSignInGoogle === 'function') {
+    // Pequeño delay para que el DOM se estabilice antes del popup
+    setTimeout(() => {
+      window._fbSignInGoogle();
+    }, 150);
+  } else {
+    // Fallback: abrir el panel de perfil si Firebase no está listo aún
+    openProfile();
+  }
+}
+
+function softgateSkip() {
+  hideSoftgate();
+  sessionStorage.setItem(SG_KEY, '1');
+  applyLockedFeatures(); // aplica los candados
+}
+
+function applyLockedFeatures() {
+  if (window._fbUser) return; // con sesión: sin restricciones
+
+  // Bloquear botón de favoritos en cards
+  document.querySelectorAll('.fav-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      showSoftgate();
+    };
+  });
+
+  // Bloquear botón Oportunidades en nav
+  const navOp = document.getElementById('navOportunidades');
+  if (navOp) {
+    navOp.onclick = (e) => {
+      e.stopPropagation();
+      showSoftgate();
+    };
+  }
+
+  // Bloquear botón de descarga PWA
+  const btnInstall = document.getElementById('btn-install');
+  if (btnInstall) {
+    btnInstall.classList.add('locked-feature');
+    btnInstall.onclick = (e) => {
+      e.stopPropagation();
+      showSoftgate();
+    };
+  }
+}
+
+function unlockFeatures() {
+  // Limpiar el gate inmediatamente
+  sessionStorage.removeItem(SG_KEY);
+  hideSoftgate();
+
+  // Esperar a que el DOM tenga las cards renderizadas
+  setTimeout(() => {
+    // Restaurar favoritos
+    document.querySelectorAll('.fav-btn').forEach(btn => {
+      const id = parseInt(btn.getAttribute('data-fav'));
+      if (id) btn.onclick = (e) => toggleFav(id, e);
+    });
+
+    // Restaurar Oportunidades
+    const navOp = document.getElementById('navOportunidades');
+    if (navOp) navOp.onclick = () => goToOportunidades();
+
+    // Restaurar PWA
+    const btnInstall = document.getElementById('btn-install');
+    if (btnInstall) {
+      btnInstall.classList.remove('locked-feature');
+      btnInstall.onclick = null;
+    }
+
+    // Restaurar WhatsApp en modal si está abierto
+    const waBtn = document.getElementById('modalWA');
+    if (waBtn) {
+      waBtn.onclick = null;
+      waBtn.style.opacity = '';
+    }
+  }, 500);
+}
+
+// Bloquear WhatsApp dentro del modal
+const _origOpenModal = openModal;
+window.openModal = function(id) {
+  _origOpenModal(id);
+  if (!window._fbUser) {
+    const waBtn = document.getElementById('modalWA');
+    if (waBtn) {
+      waBtn.onclick = (e) => {
+        e.preventDefault();
+        showSoftgate();
+      };
+      waBtn.style.opacity = '0.5';
+    }
+  }
+};
+
+
+
 // Actualiza el panel según el estado de Firebase
 window._fbUpdateProfileUI = function(user) {
   const out = document.getElementById('viewLoggedOut');
@@ -2769,6 +2881,31 @@ function goToOportunidades() {
       headerLogo.addEventListener('click', goHome);
       headerLogo.setAttribute('title', 'Ir al Inicio');
     }
+
+
+     // ── SOFT GATE — mostrar después de 6 segundos si no hay sesión ──
+  setTimeout(() => {
+    if (!window._fbUser && !sessionStorage.getItem(SG_KEY)) {
+      showSoftgate();
+    }
+  }, 6000);
+
+  function applyLockedIfNeeded() {
+  if (!window._fbUser && sessionStorage.getItem(SG_KEY)) {
+    applyLockedFeatures();
+  }
+}
+// Esperar a que Firebase confirme el estado antes de aplicar candados
+const checkFirebase = setInterval(() => {
+  if (firebaseReady) {
+    clearInterval(checkFirebase);
+    applyLockedIfNeeded();
+  }
+}, 100);
+
+// Timeout de seguridad por si Firebase tarda mucho
+setTimeout(() => { clearInterval(checkFirebase); applyLockedIfNeeded(); }, 3000);
+
   });
 
   // Teclado para galería
@@ -2779,6 +2916,7 @@ function goToOportunidades() {
     else if (e.key === 'ArrowLeft') prevLightboxSlide();
     else if (e.key === 'Escape') closeLightbox();
   });
+
 })();
 
 
@@ -3125,58 +3263,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 800);
 });
 
-
-
-// --- VARIABLES DEL SOFT GATE ---
-let softgateTimer;
-
-// Función para mostrar el modal
-function showSoftGate() {
-    // Preguntamos directamente al objeto global que crea tu código original
-    if (window._fbUser) return; // Si hay usuario, no mostramos el modal
-    document.getElementById('softgateOverlay').classList.add('active');
-    document.body.classList.add('modal-open');
-}
-
-// Función para ocultar el modal (Botón "Explorar sin cuenta")
-function softgateSkip() {
-    document.getElementById('softgateOverlay').classList.remove('active');
-    document.body.classList.remove('modal-open');
-    sessionStorage.setItem('softgateSkipped', 'true'); 
-}
-
-// Función conectada a tu botón de Google
-function softgateLogin() {
-    document.getElementById('softgateOverlay').classList.remove('active');
-    document.body.classList.remove('modal-open');
-    if (typeof window._fbSignInGoogle === 'function') {
-        window._fbSignInGoogle();
-    }
-}
-
-// --- INTERCEPTOR DE CLICS SEGURO ---
-document.addEventListener('DOMContentLoaded', () => {
-    // Usamos delegación de eventos en el documento (es más seguro para elementos dinámicos)
-    document.body.addEventListener('click', (e) => {
-        // Busca si el clic se hizo en un elemento con la clase .restricted-action o dentro de él
-        const restrictedElement = e.target.closest('.restricted-action');
-        
-        if (restrictedElement) {
-            // VERIFICACIÓN DIRECTA: ¿Hay un usuario de Firebase activo?
-            // Tu código original guarda el usuario en window._fbUser
-            if (!window._fbUser) {
-                e.preventDefault();
-                e.stopPropagation();
-                showSoftGate();
-            }
-        }
-    }, true); // El "true" es importante, captura el evento antes de que se propague (fase de captura)
-});
-
-
-
-
-
 // ── NOTIFICACIÓN DE ACTUALIZACIÓN ──
 /*if ('serviceWorker' in navigator) {
   // Ignorar el primer mensaje (instalación inicial)
@@ -3210,6 +3296,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </button>`;
     toast.classList.add('show');
   }); */
+
   
 </script>
 

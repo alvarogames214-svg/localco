@@ -2899,108 +2899,132 @@ body.dark .op-card-placeholder {
 }
 
 
-/* --- SOFT GATE OVERLAY --- */
+/* ── SOFT GATE ── */
 .softgate-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px); /* Desenfoque de fondo */
-  -webkit-backdrop-filter: blur(8px);
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 88888;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999; /* Por encima de todo */
-  
-  /* Oculto por defecto con animación */
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
 }
 
-/* Clase para activar el modal */
-.softgate-overlay.active {
+.softgate-overlay.visible {
   opacity: 1;
   visibility: visible;
 }
 
-/* --- CONTENEDOR DEL MODAL --- */
 .softgate-modal {
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 30px 25px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 32px 24px 28px;
+  max-width: 360px;
   width: 90%;
-  max-width: 400px;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  
-  /* Animación de deslizamiento hacia arriba */
-  transform: translateY(30px);
-  transition: transform 0.3s ease;
+  box-shadow: var(--shadow-premium);
+  animation: sgSlideUp 0.4s cubic-bezier(0.34,1.4,0.64,1) both;
 }
 
-.softgate-overlay.active .softgate-modal {
-  transform: translateY(0);
+@keyframes sgSlideUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
 
-/* --- TIPOGRAFÍA Y ELEMENTOS --- */
-.softgate-icon { font-size: 40px; margin-bottom: 10px; }
-.softgate-title { font-family: 'Syne', sans-serif; font-size: 22px; color: #111; margin: 0 0 10px; font-weight: 700; }
-.softgate-desc { font-family: 'DM Sans', sans-serif; font-size: 15px; color: #555; margin-bottom: 25px; line-height: 1.5; }
-.softgate-desc strong { color: #000; }
+.softgate-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  display: block;
+  animation: sgBounce 1.5s ease infinite;
+}
 
-/* --- BOTONES --- */
+@keyframes sgBounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+.softgate-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.softgate-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 22px;
+}
+
+.softgate-desc strong { color: var(--primary); }
+
 .softgate-google-btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  background: #fff;
-  font-family: 'DM Sans', sans-serif;
-  font-weight: 600;
-  font-size: 16px;
-  color: #333;
-  cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s;
-  margin-bottom: 12px;
+  gap: 10px;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s, transform 0.15s;
+  margin-bottom: 10px;
 }
-.softgate-google-btn:hover { background: #f8f9fa; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+
+.softgate-google-btn:hover  { box-shadow: var(--shadow-hover); }
+.softgate-google-btn:active { transform: scale(0.97); }
 
 .softgate-skip-btn {
   background: none;
   border: none;
-  color: #6c757d;
+  color: var(--text-muted);
   font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
   font-weight: 600;
-  font-size: 15px;
   cursor: pointer;
-  padding: 10px;
-  margin-bottom: 5px;
+  padding: 8px;
+  width: 100%;
   transition: color 0.2s;
 }
-.softgate-skip-btn:hover { color: #111; }
 
-.softgate-note { font-family: 'DM Sans', sans-serif; font-size: 12px; color: #aaa; margin: 0; }
+.softgate-skip-btn:hover { color: var(--primary); }
 
-/* Bloquea el scroll de la página cuando el modal está abierto */
-body.modal-open { overflow: hidden; }
+.softgate-note {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 8px;
+  opacity: 0.6;
+}
 
-/* --- CANDADO VISUAL (OPCIONAL) --- */
-/* Si agregas esta clase a un botón, le pondrá un candadito en la esquina */
-.is-locked { position: relative; }
-.is-locked::after {
+/* Elementos bloqueados para usuarios sin sesión */
+.locked-feature {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.45;
+  filter: grayscale(0.3);
+}
+
+.locked-feature::after {
   content: '🔒';
   position: absolute;
-  top: -8px;
-  right: -8px;
-  font-size: 14px;
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18px;
+  pointer-events: none;
+  z-index: 10;
 }
