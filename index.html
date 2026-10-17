@@ -67,6 +67,19 @@ const auth      = getAuth(fbApp);
 const db        = getFirestore(fbApp);
 const gProvider = new GoogleAuthProvider();
 
+async function saveUserCloud(user) {
+  try {
+    await setDoc(doc(db,'users',user.uid), {
+      uid: user.uid,
+      displayName: user.displayName || '',
+      email: user.email || '',
+      photoURL: user.photoURL || '',
+      lastLogin: new Date().toISOString(),
+      provider: 'google.com'
+    }, { merge: true });
+  } catch(e) { console.warn('Firestore user write:', e); }
+}
+
 async function saveFavsCloud(uid, favs) {
   try { await setDoc(doc(db,'users',uid), { favorites: favs }, { merge:true }); }
   catch(e) { console.warn('Firestore write:', e); }
@@ -80,12 +93,14 @@ async function loadFavsCloud(uid) {
   return null;
 }
 
-window._fbSignInGoogle = async function() {
+window._fbSignInGoogle = async function(btnId = 'googleBtn') {
+  const btn = document.getElementById(btnId);
   try {
-    document.getElementById('googleBtn').classList.add('loading');
+    if (btn) btn.classList.add('loading');
     await signInWithPopup(auth, gProvider);
+    if (btn) btn.classList.remove('loading');
   } catch(e) {
-    document.getElementById('googleBtn').classList.remove('loading');
+    if (btn) btn.classList.remove('loading');
     if (e.code !== 'auth/popup-closed-by-user')
       showToast('❌ Error al iniciar sesión');
   }
@@ -101,6 +116,11 @@ window._fbSaveFavs = function(uid, favs) { saveFavsCloud(uid, favs); };
 onAuthStateChanged(auth, async (user) => {
   window._fbUser = user || null;
   if (user) {
+    localStorage.setItem('cl_user_registered', 'true');
+    saveUserCloud(user);
+    if (typeof window.softgateCloseDirect === 'function') {
+      window.softgateCloseDirect();
+    }
     const cloudFavs = await loadFavsCloud(user.uid);
     if (cloudFavs) {
       const merged = [...new Set([...favorites, ...cloudFavs])];
@@ -109,7 +129,8 @@ onAuthStateChanged(auth, async (user) => {
       localStorage.setItem('cl_fav', JSON.stringify(favorites));
       render(activeFilter ? data.filter(d => d.cat === activeFilter) : data);
     }
-    showToast(`👋 ¡Hola, ${user.displayName.split(' ')[0]}!`);
+    const firstName = user.displayName ? user.displayName.split(' ')[0] : 'amigo';
+    showToast(`👋 ¡Hola, ${firstName}!`);
   }
   if (typeof window._fbUpdateProfileUI === 'function')
     window._fbUpdateProfileUI(user);
@@ -622,6 +643,65 @@ onAuthStateChanged(auth, async (user) => {
   </div>
 </div>
 
+<!-- SOFT-GATE GOOGLE WELCOME MODAL -->
+<div class="softgate-overlay" id="softgateOverlay" onclick="softgateOverlayClick(event)" aria-modal="true" role="dialog" aria-labelledby="softgateTitle">
+  <div class="softgate-modal">
+    <button class="softgate-close-corner" onclick="softgateSkip()" aria-label="Cerrar">
+      <i class="fas fa-times"></i>
+    </button>
+
+    <div class="softgate-badge-wrap">
+      <div class="softgate-icon-badge">
+        <img src="coneico.png" alt="Conexión Local" class="softgate-logo-img">
+        <span class="softgate-sparkle-pill">✨</span>
+      </div>
+    </div>
+
+    <h2 class="softgate-title" id="softgateTitle">¡Bienvenido a Conexión Local!</h2>
+    <p class="softgate-subtitle">Tu directorio digital de Puerto Tejada</p>
+
+    <p class="softgate-desc">
+      Inicia sesión para disfrutar de toda la experiencia y acceder a funciones exclusivas:
+    </p>
+
+    <div class="softgate-perks">
+      <div class="softgate-perk-item">
+        <div class="perk-icon"><i class="fas fa-heart"></i></div>
+        <div class="perk-text"><strong>Favoritos en la nube:</strong> Guarda tus comercios preferidos y no pierdas tu lista.</div>
+      </div>
+      <div class="softgate-perk-item">
+        <div class="perk-icon"><i class="fas fa-briefcase"></i></div>
+        <div class="perk-text"><strong>Oportunidades de empleo:</strong> Descubre vacantes y convocatorias laborales.</div>
+      </div>
+      <div class="softgate-perk-item">
+        <div class="perk-icon"><i class="fab fa-whatsapp"></i></div>
+        <div class="perk-text"><strong>Contacto directo:</strong> Chatea por WhatsApp con cada comercio con un solo toque.</div>
+      </div>
+    </div>
+
+    <button class="softgate-google-btn" id="softgateGoogleBtn" onclick="softgateLogin()" aria-label="Continuar con Google">
+      <div class="softgate-btn-content">
+        <svg class="g-icon" viewBox="0 0 24 24" width="22" height="22">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        <span>Continuar con Google</span>
+      </div>
+      <div class="g-spinner"></div>
+    </button>
+
+    <button class="softgate-skip-btn" onclick="softgateSkip()" aria-label="Explorar sin cuenta">
+      <span>Explorar sin cuenta</span>
+      <i class="fas fa-arrow-right"></i>
+    </button>
+
+    <div class="softgate-privacy-note">
+      <i class="fas fa-shield-alt"></i> Tu cuenta es segura y solo usamos tus datos para personalizar tu experiencia.
+    </div>
+  </div>
+</div>
 
 <script>
 const EMOJIS = {
@@ -2546,6 +2626,70 @@ window._fbUpdateProfileUI = function(user) {
   }
 }
 
+// ── MODAL DE CAPTACIÓN / BIENVENIDA (SOFT-GATE GOOGLE) ──
+let softgateTimer = null;
+
+function initSoftgate() {
+  // Si ya se registró o inició sesión previamente, nunca más mostrar
+  if (localStorage.getItem('cl_user_registered') === 'true') return;
+  // Si en la sesión actual ya lo saltó, no molestar más durante esta sesión
+  if (sessionStorage.getItem('cl_softgate_dismissed') === 'true') return;
+
+  softgateTimer = setTimeout(() => {
+    // Validar de nuevo antes de abrir
+    if (window._fbUser) return;
+    if (localStorage.getItem('cl_user_registered') === 'true') return;
+    if (sessionStorage.getItem('cl_softgate_dismissed') === 'true') return;
+
+    openSoftgate();
+  }, 5000);
+}
+
+function openSoftgate() {
+  const overlay = document.getElementById('softgateOverlay');
+  if (!overlay) return;
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function softgateCloseDirect() {
+  if (softgateTimer) {
+    clearTimeout(softgateTimer);
+    softgateTimer = null;
+  }
+  const overlay = document.getElementById('softgateOverlay');
+  if (overlay) {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+function softgateSkip() {
+  sessionStorage.setItem('cl_softgate_dismissed', 'true');
+  softgateCloseDirect();
+  if (typeof showToast === 'function') {
+    showToast('✨ ¡Explora libremente! Puedes registrarte luego desde tu perfil.');
+  }
+}
+
+function softgateOverlayClick(e) {
+  if (e.target === document.getElementById('softgateOverlay')) {
+    softgateSkip();
+  }
+}
+
+async function softgateLogin() {
+  if (typeof window._fbSignInGoogle === 'function') {
+    await window._fbSignInGoogle('softgateGoogleBtn');
+  }
+}
+
+window.softgateCloseDirect = softgateCloseDirect;
+window.softgateSkip = softgateSkip;
+window.softgateLogin = softgateLogin;
+window.softgateOverlayClick = softgateOverlayClick;
+window.initSoftgate = initSoftgate;
+
 // ── DATOS DE OPORTUNIDADES (29 cards para flyers e imágenes laborales) ──
 const oportunidadesData = [
   { id: 1,  img: './oportunidadesimg/OperarioBordador.jpeg' },
@@ -3090,6 +3234,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const loader = document.getElementById('pageLoader');
     if (loader) loader.classList.add('hidden');
   }, 800);
+
+  // Iniciar temporizador de 5 segundos para bienvenida y captación con Google
+  initSoftgate();
 });
 
 // ── NOTIFICACIÓN DE ACTUALIZACIÓN ──
@@ -3128,30 +3275,6 @@ document.addEventListener('DOMContentLoaded', () => {
   
 </script>
 
-<!-- SOFT GATE MODAL -->
-<div class="softgate-overlay" id="softgateOverlay">
-  <div class="softgate-modal">
-    <div class="softgate-icon">🌟</div>
-    <h2 class="softgate-title">¡Bienvenido a Conexión Local!</h2>
-    <p class="softgate-desc">
-      Inicia sesión para acceder a <strong>favoritos, oportunidades de empleo, 
-      contacto con negocios</strong> y mucho más.
-    </p>
-    <button class="softgate-google-btn" onclick="softgateLogin()">
-      <svg viewBox="0 0 24 24" width="20" height="20">
-        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
-        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-      </svg>
-      Continuar con Google
-    </button>
-    <button class="softgate-skip-btn" onclick="softgateSkip()">
-      Explorar sin cuenta →
-    </button>
-    <p class="softgate-note">Solo lectura · Sin registro previo</p>
-  </div>
-</div>
 
 </body>
 </html>
