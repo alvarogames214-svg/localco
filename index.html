@@ -644,11 +644,8 @@ onAuthStateChanged(auth, async (user) => {
 </div>
 
 <!-- SOFT-GATE GOOGLE WELCOME MODAL -->
-<div class="softgate-overlay" id="softgateOverlay" onclick="softgateOverlayClick(event)" aria-modal="true" role="dialog" aria-labelledby="softgateTitle">
+<div class="softgate-overlay" id="softgateOverlay" aria-modal="true" role="dialog" aria-labelledby="softgateTitle">
   <div class="softgate-modal">
-    <button class="softgate-close-corner" onclick="softgateSkip()" aria-label="Cerrar">
-      <i class="fas fa-times"></i>
-    </button>
 
     <div class="softgate-badge-wrap">
       <div class="softgate-icon-badge">
@@ -691,7 +688,6 @@ onAuthStateChanged(auth, async (user) => {
       </div>
       <div class="g-spinner"></div>
     </button>
-
     <button class="softgate-skip-btn" onclick="softgateSkip()" aria-label="Explorar sin cuenta">
       <span>Explorar sin cuenta</span>
       <i class="fas fa-arrow-right"></i>
@@ -2673,9 +2669,7 @@ function softgateSkip() {
 }
 
 function softgateOverlayClick(e) {
-  if (e.target === document.getElementById('softgateOverlay')) {
-    softgateSkip();
-  }
+  // Modal incerrable desde el fondo exterior: solo se cierra con "Explorar sin cuenta"
 }
 
 async function softgateLogin() {
