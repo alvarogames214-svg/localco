@@ -198,9 +198,9 @@ body.dark .dark-toggle { background: rgba(232,82,10,0.18); }
     max-width: 55%;
   }
   .hero-title {
-    font-size: 36px !important;
-    line-height: 1.1;
-    margin-right: 100px;
+    font-size: 34px !important;
+    line-height: 1.12;
+    margin-right: 40px;
   }
   .hero-sub {
     font-size: 15px !important;
@@ -211,12 +211,12 @@ body.dark .dark-toggle { background: rgba(232,82,10,0.18); }
     padding: 10px 20px;
   }
   .hero-img-side {
-    width: 300px !important;
-    height: 300px !important;
-    margin-right: 18px;
-    border-radius: 22px;
-    border: 3px solid rgba(255,255,255,0.25);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    width: 250px !important;
+    height: 250px !important;
+    margin-right: 24px;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
   }
   .hero-arrow {
     width: 38px;
@@ -238,144 +238,317 @@ body.dark .dark-toggle { background: rgba(232,82,10,0.18); }
   }
   .hero-content {
     padding: 44px 36px !important;
-    max-width: 50%;
+    max-width: 52%;
   }
   .hero-title {
-    font-size: 46px !important;
-    margin-bottom: 8px;
+    font-size: 44px !important;
+    margin-bottom: 12px;
   }
   .hero-sub {
     font-size: 17px !important;
     margin-bottom: 28px;
   }
   .hero-img-side {
-    width: 580px !important;
-    height: 380px !important;
-    margin-right: 50px;
-    border-radius: 26px;
-    border: 3px solid rgba(255,255,255,0.3);
-    box-shadow: 0 16px 50px rgba(0,0,0,0.55);
+    width: 330px !important;
+    height: 330px !important;
+    margin-right: 48px;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
   }
 }
 
 .hero-track {
-  display: flex;
-  height: 100%;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform;
-}
-
-.hero-slide {
-  flex-shrink: 0;
+  position: relative;
   width: 100%;
   height: 100%;
-  position: relative;
-  display: flex;
-  align-items: center;
   overflow: hidden;
 }
 
-/* Blurred background from the image itself */
+/* 3. Slides apilados con transición suave de Fade + Zoom y Morph de fondo */
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.95);
+  transition: opacity 0.65s cubic-bezier(0.2, 0.8, 0.2, 1), 
+              transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1), 
+              visibility 0.65s;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero-slide.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  pointer-events: auto;
+  z-index: 2;
+}
+
+.hero-slide.prev-slide {
+  opacity: 0;
+  visibility: visible;
+  transform: scale(1.04);
+  transition: opacity 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), 
+              transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 1;
+}
+
+/* Blurred background con morph de colores suave */
 .hero-slide-bg {
   position: absolute;
   inset: 0;
   background-size: cover;
   background-position: center;
-  filter: blur(20px) brightness(0.25) saturate(1.2);
-  transform: scale(1.12);
+  filter: blur(24px) brightness(0.28) saturate(1.3);
+  transform: scale(1.15);
   z-index: 0;
-  
+  transition: transform 1.2s ease-out;
+}
+
+.hero-slide.active .hero-slide-bg {
+  transform: scale(1.08);
 }
 
 /* Left: text content */
 .hero-content {
   position: relative;
-  padding: 18px 16px 18px 20px;
+  padding: 20px 18px 20px 22px;
   z-index: 2;
   flex: 1;
   min-width: 0;
 }
 
-/* Right: business image */
-.hero-img-side {
-  position: relative;
-  z-index: 2;
-  width: 140px;
-  height: 140px;
-  flex-shrink: 0;
-  margin-right: 16px;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.45);
-  border: 2px solid rgba(255,255,255,0.2);
-}
-
-.hero-img-side img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-@media (max-width: 400px) {
-  .hero-img-side { width: 110px; height: 110px; margin-right: 12px; }
-  .hero-title { font-size: 20px !important; }
-}
-
-.hero-content {
-  position: relative;
-  padding: 22px 22px;
-  z-index: 2;
-  flex: 1;
-}
-
 .hero-tag {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  background: rgba(255,255,255,0.22);
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   color: #fff;
   font-size: 10px;
   font-weight: 700;
   padding: 4px 10px;
   border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
   width: fit-content;
   margin-bottom: 10px;
   letter-spacing: 0.8px;
   text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.4s ease 0.08s, transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) 0.08s;
 }
 
+.hero-slide.active .hero-tag {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 1. Gradiente llamativo en el título y animación palabra por palabra */
 .hero-title {
   font-family: 'Syne', sans-serif;
   font-size: 23px;
   font-weight: 800;
   color: #fff;
   line-height: 1.15;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
+  letter-spacing: -0.3px;
 }
 
+.hero-word {
+  display: inline-block;
+  background: linear-gradient(135deg, #FFFFFF 15%, #FFF0E5 50%, #FF9E66 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: #FFFFFF;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.45));
+  opacity: 0;
+  transform: translateY(14px) scale(0.96);
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: calc(0.1s + var(--w-i, 1) * 0.055s);
+  will-change: transform, opacity;
+}
+
+.hero-slide.active .hero-word {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Subtítulo con subrayado animado que se dibuja al entrar el slide */
 .hero-sub {
   font-size: 12px;
-  color: rgba(255,255,255,0.82);
+  color: rgba(255, 255, 255, 0.88);
   margin-bottom: 14px;
+  line-height: 1.4;
+  position: relative;
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease 0.28s, transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) 0.28s;
+}
+
+.hero-sub::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(90deg, #E8520A, #FF9E66 60%, transparent 100%);
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(232, 82, 10, 0.6);
+  transition: width 0.7s cubic-bezier(0.25, 1, 0.5, 1) 0.42s;
+}
+
+.hero-slide.active .hero-sub {
+  opacity: 0.95;
+  transform: translateY(0);
+}
+
+.hero-slide.active .hero-sub::after {
+  width: 90%;
 }
 
 .hero-cta {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  background: rgba(255,255,255,0.95);
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.95);
   color: var(--primary);
   font-size: 12px;
   font-weight: 700;
-  padding: 7px 14px;
+  padding: 7px 16px;
   border-radius: 20px;
   cursor: pointer;
   border: none;
   font-family: 'DM Sans', sans-serif;
-  transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.45s ease 0.35s, transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) 0.35s, background 0.2s;
 }
-.hero-cta:active { transform: scale(0.95); background: #fff; }
+
+.hero-slide.active .hero-cta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero-cta:hover {
+  background: #ffffff;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.hero-cta:active {
+  transform: scale(0.95);
+}
+
+/* 2. Halo de luz difuso y contenedor de imagen con parallax */
+.hero-img-side {
+  position: relative;
+  z-index: 2;
+  width: 135px;
+  height: 135px;
+  flex-shrink: 0;
+  margin-right: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(28px) scale(0.9);
+  opacity: 0;
+  transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) 0.12s, opacity 0.6s ease 0.12s;
+}
+
+.hero-slide.active .hero-img-side {
+  transform: translateX(0) scale(1);
+  opacity: 1;
+}
+
+/* Halo de luz difuso que se fusiona con el color de cada slide */
+.hero-img-side::before {
+  content: '';
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle, 
+    var(--slide-halo, rgba(232, 82, 10, 0.75)) 0%, 
+    var(--slide-halo-soft, rgba(245, 166, 35, 0.35)) 45%, 
+    transparent 72%
+  );
+  filter: blur(18px);
+  z-index: 0;
+  opacity: 0.85;
+  pointer-events: none;
+  animation: heroHaloPulse 4.5s ease-in-out infinite alternate;
+}
+
+@keyframes heroHaloPulse {
+  0%   { transform: scale(0.92); opacity: 0.65; }
+  100% { transform: scale(1.12); opacity: 1; }
+}
+
+/* Forma orgánica tipo Blob en vez de marco rectangular */
+.hero-img-blob {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+  overflow: hidden;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.55), inset 0 0 0 2px rgba(255, 255, 255, 0.35);
+  animation: heroBlobMorph 8s ease-in-out infinite alternate, heroBlobFloat 5s ease-in-out infinite alternate;
+  background: rgba(0, 0, 0, 0.25);
+  transition: border-radius 0.6s ease;
+}
+
+@keyframes heroBlobMorph {
+  0% {
+    border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+  }
+  33% {
+    border-radius: 58% 42% 40% 60% / 54% 36% 64% 46%;
+  }
+  66% {
+    border-radius: 35% 65% 58% 42% / 40% 60% 40% 60%;
+  }
+  100% {
+    border-radius: 50% 50% 65% 35% / 52% 40% 60% 48%;
+  }
+}
+
+@keyframes heroBlobFloat {
+  0%   { transform: translateY(0px) rotate(0deg); }
+  100% { transform: translateY(-6px) rotate(1.2deg); }
+}
+
+.hero-img-blob img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.08);
+  transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.hero-slide.active .hero-img-blob img {
+  transform: scale(1.02);
+}
+
+@media (max-width: 400px) {
+  .hero-img-side { width: 105px; height: 105px; margin-right: 12px; }
+  .hero-title { font-size: 20px !important; }
+}
 
 /* Dots */
 .hero-dots {
@@ -441,6 +614,7 @@ body.dark .dark-toggle { background: rgba(232,82,10,0.18); }
 .hero-arrow:hover { background: rgba(255,255,255,0.35); }
 .hero-arrow.prev { left: 10px; }
 .hero-arrow.next { right: 10px; }
+
 
 /* ── SEARCH ── */
 .search-wrap {
@@ -2305,30 +2479,62 @@ body.dark #navOportunidades::after {
    COLORES DE FONDO PARA CADA SLIDE DEL CARRUSEL
    ═══════════════════════════════════════ */
 
-/* Clases de color para cada banner */
-.banner-educacion       { background-color: #2A2F38; }
-.banner-tecnologia-trisol { background-color: #3A1F2D; }
-.banner-hospedaje       { background-color: #1F3B3A; }
-.banner-caucaser        { background-color: #2A2F38; }
-.banner-belleza         { background-color: #3A1F3A; }
-.banner-papeleria       { background-color: #A34F2D; }
-.banner-ferreteria      { background-color: #1E1E1E; }
-.banner-comunicacion    { background-color: #1F3B3A; }
+/* Clases de color y halos para cada banner */
+.banner-educacion {
+  background-color: #1a2233;
+  --slide-halo: rgba(79, 140, 255, 0.75);
+  --slide-halo-soft: rgba(120, 180, 255, 0.35);
+}
+.banner-comunicacion {
+  background-color: #112c33;
+  --slide-halo: rgba(0, 210, 211, 0.8);
+  --slide-halo-soft: rgba(72, 219, 251, 0.35);
+}
+.banner-ferreteria {
+  background-color: #241d18;
+  --slide-halo: rgba(255, 159, 67, 0.8);
+  --slide-halo-soft: rgba(254, 202, 87, 0.35);
+}
+.banner-papeleria {
+  background-color: #381c19;
+  --slide-halo: rgba(255, 107, 107, 0.8);
+  --slide-halo-soft: rgba(255, 159, 67, 0.35);
+}
+.banner-belleza {
+  background-color: #30172e;
+  --slide-halo: rgba(243, 104, 224, 0.8);
+  --slide-halo-soft: rgba(255, 159, 243, 0.35);
+}
+.banner-caucaser {
+  background-color: #182b29;
+  --slide-halo: rgba(29, 209, 161, 0.8);
+  --slide-halo-soft: rgba(16, 172, 139, 0.35);
+}
+.banner-hospedaje {
+  background-color: #172638;
+  --slide-halo: rgba(84, 160, 255, 0.8);
+  --slide-halo-soft: rgba(0, 210, 211, 0.35);
+}
+.banner-tecnologia-trisol {
+  background-color: #2b1520;
+  --slide-halo: rgba(232, 82, 10, 0.85);
+  --slide-halo-soft: rgba(255, 159, 67, 0.4);
+}
 
 /* Overlay sutil sobre cada slide */
 .hero-slide[class*="banner-"]::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.05);
+  background: radial-gradient(circle at 75% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 65%);
   z-index: 1;
   pointer-events: none;
 }
 
 /* Dejar que el color de fondo brille reduciendo la imagen difuminada */
 .hero-slide[class*="banner-"] .hero-slide-bg {
-  opacity: 0.1;
-  filter: blur(20px) brightness(0.6) saturate(1.4);
+  opacity: 0.18;
+  filter: blur(24px) brightness(0.65) saturate(1.4);
 }
 
 /* Asegurar que el contenido siga por encima */

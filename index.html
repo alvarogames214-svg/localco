@@ -2967,15 +2967,44 @@ function goToOportunidades() {
   const slides   = track.querySelectorAll('.hero-slide');
   const total    = slides.length;
   let current    = 0;
+  let prevIndex  = -1;
   let autoTimer  = null;
   let progTimer  = null;
   const DELAY    = 4000;
 
-  // Build dots
-  slides.forEach((_, i) => {
+  // 1. Preparar títulos (palabra por palabra) y contenedor Blob para imágenes
+  slides.forEach((slide, sIdx) => {
+    // Título con spans palabra por palabra
+    const title = slide.querySelector('.hero-title');
+    if (title && !title.querySelector('.hero-word')) {
+      const lines = title.innerHTML.split(/<br\s*\/?>/i);
+      let wordIndex = 0;
+      title.innerHTML = lines.map(line => {
+        const words = line.trim().split(/\s+/);
+        return words.map(w => {
+          if (!w) return '';
+          wordIndex++;
+          return `<span class="hero-word" style="--w-i:${wordIndex}">${w}</span>`;
+        }).join(' ');
+      }).join('<br>');
+    }
+
+    // Contenedor orgánico Blob para la imagen
+    const side = slide.querySelector('.hero-img-side');
+    if (side) {
+      const img = side.querySelector('img');
+      if (img && !side.querySelector('.hero-img-blob')) {
+        const blob = document.createElement('div');
+        blob.className = 'hero-img-blob';
+        side.insertBefore(blob, img);
+        blob.appendChild(img);
+      }
+    }
+
+    // Crear Dots
     const d = document.createElement('div');
-    d.className = 'hero-dot' + (i === 0 ? ' active' : '');
-    d.onclick = () => goTo(i);
+    d.className = 'hero-dot' + (sIdx === 0 ? ' active' : '');
+    d.onclick = () => goTo(sIdx);
     dotsWrap.appendChild(d);
   });
 
@@ -2994,9 +3023,24 @@ function goToOportunidades() {
     }, 30);
   }
 
-  function goTo(idx, dir) {
+  // 3. Transición Fade + Zoom entre slides
+  function goTo(idx) {
+    if (idx === current && prevIndex !== -1) return;
+    prevIndex = current;
     current = (idx + total) % total;
-    track.style.transform = `translateX(-${current * 100}%)`;
+
+    slides.forEach((s, i) => {
+      s.classList.remove('prev-slide');
+      if (i === current) {
+        s.classList.add('active');
+      } else if (i === prevIndex) {
+        s.classList.remove('active');
+        s.classList.add('prev-slide');
+      } else {
+        s.classList.remove('active');
+      }
+    });
+
     updateDots();
     startProgress();
   }
@@ -3017,26 +3061,35 @@ function goToOportunidades() {
   document.getElementById('heroNext').onclick = () => { next(); resetAuto(); };
   document.getElementById('heroPrev').onclick = () => { prev(); resetAuto(); };
 
-  // Touch/swipe
+  // Touch / swipe horizontal inteligente (evita conflictos con scroll vertical)
   let touchStartX = 0;
+  let touchStartY = 0;
   const carousel = document.getElementById('heroCarousel');
-  carousel.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-  carousel.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(dx) > 40) { dx < 0 ? next() : prev(); resetAuto(); }
+  carousel.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
   }, { passive: true });
 
-  // Pause on hover
+  carousel.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > 35 && Math.abs(dx) > Math.abs(dy)) {
+      dx < 0 ? next() : prev();
+      resetAuto();
+    }
+  }, { passive: true });
+
+  // Pausar en hover (escritorio)
   carousel.addEventListener('mouseenter', () => clearInterval(autoTimer));
   carousel.addEventListener('mouseleave', resetAuto);
 
-  // Kick off
+  // Inicializar estado activo
+  slides[0].classList.add('active');
   startAuto();
   startProgress();
 })();
-</script>
 
-<script>
+
 // ── PWA / SERVICE WORKER ──
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
