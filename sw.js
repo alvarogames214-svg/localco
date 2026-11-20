@@ -1,5 +1,5 @@
 /* Conexión Local — Service Worker */
-const CACHE_NAME = 'conexion-local-v10'; // ← sube la versión para forzar actualización
+const CACHE_NAME = 'conexion-local-v15'; // ← sube la versión para forzar actualización
 const APP_SHELL = [
   './',
   './index.html',
@@ -70,7 +70,21 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Archivos propios (CSS, imágenes, JS) → Stale-While-Revalidate
+  // CSS / JS / manifest propios → Network First (siempre el más reciente; caché solo si no hay red)
+  if (isSameOrigin && /\.(css|js|json)$/.test(url.pathname)) {
+    event.respondWith(
+      fetch(request).then(response => {
+        if (response.ok) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(c => c.put(request, clone));
+        }
+        return response;
+      }).catch(() => caches.match(request))
+    );
+    return;
+  }
+
+  // Imágenes propias → Stale-While-Revalidate
   if (isSameOrigin) {
     event.respondWith(
       caches.open(CACHE_NAME).then(async cache => {

@@ -11,8 +11,8 @@
 
 <title>Conexión Local</title>
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="estilo.css?v=202612">
-<meta name="theme-color" content="#E8520A">
+<link rel="stylesheet" href="estilo.css?v=15">
+<meta name="theme-color" content="#FF4794">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -307,6 +307,84 @@ onAuthStateChanged(auth, async (user) => {
       </div>
     </div>
 
+    <!-- Slide 9 — La Sazón de Chepa -->
+    <div class="hero-slide banner-comida">
+      <div class="hero-slide-bg" style="background-image:url('imagen/SA1.jpg');"></div>
+      <div class="hero-content">
+        <div class="hero-tag"><i class="fas fa-utensils"></i> Restaurante</div>
+        <div class="hero-title">Sazón casera<br>En cada plato</div>
+        <div class="hero-sub">Desayunos, almuerzos ejecutivos y platos a la carta</div>
+        <button class="hero-cta" onclick="openModal(21)"><i class="fas fa-arrow-right"></i> Ver más</button>
+      </div>
+      <div class="hero-img-side"><img src="imagen/LOGOSA.jpg" alt="Restaurante La Sazón de Chepa">
+      </div>
+    </div>
+
+    <!-- Slide 10 — Droguería Azcárate -->
+    <div class="hero-slide banner-salud">
+      <div class="hero-slide-bg" style="background-image:url('imagen/1DROGUERIAAZCARATE.jpg');"></div>
+      <div class="hero-content">
+        <div class="hero-tag"><i class="fas fa-pills"></i> Salud y bienestar</div>
+        <div class="hero-title">Tu salud<br>Cerca de ti</div>
+        <div class="hero-sub">Medicamentos, productos naturales, inyectología y cosmetología</div>
+        <button class="hero-cta" onclick="openModal(16)"><i class="fas fa-arrow-right"></i> Ver más</button>
+      </div>
+      <div class="hero-img-side"><img src="imagen/LOGODROGUERIAAZCARATE.jpg" alt="Droguería Azcárate">
+      </div>
+    </div>
+
+    <!-- Slide 11 — Trending Urban -->
+    <div class="hero-slide banner-moda">
+      <div class="hero-slide-bg" style="background-image:url('imagen/1TRENDING.jpeg');"></div>
+      <div class="hero-content">
+        <div class="hero-tag"><i class="fas fa-tshirt"></i> Moda urbana</div>
+        <div class="hero-title">Tu estilo<br>Tu calle</div>
+        <div class="hero-sub">Ropa urbana, busos, gorras y camisetas</div>
+        <button class="hero-cta" onclick="openModal(27)"><i class="fas fa-arrow-right"></i> Ver más</button>
+      </div>
+      <div class="hero-img-side"><img src="imagen/LOGOTRENDING.jpeg" alt="Trending Urban">
+      </div>
+    </div>
+
+    <!-- Slide 12 — Renacer Agencia de Viajes -->
+    <div class="hero-slide banner-viajes">
+      <div class="hero-slide-bg" style="background-image:url('imagen/1RENACER.png');"></div>
+      <div class="hero-content">
+        <div class="hero-tag"><i class="fas fa-plane"></i> Agencia de viajes</div>
+        <div class="hero-title">Tu próximo<br>Destino</div>
+        <div class="hero-sub">Pasadías, excursiones, planes migratorios y tiquetes aéreos</div>
+        <button class="hero-cta" onclick="openModal(62)"><i class="fas fa-arrow-right"></i> Ver más</button>
+      </div>
+      <div class="hero-img-side"><img src="imagen/LOGORENACER.jpg" alt="Renacer Agencia de Viajes">
+      </div>
+    </div>
+
+    <!-- Slide 13 — AVA Asesorías -->
+    <div class="hero-slide banner-contable">
+      <div class="hero-slide-bg" style="background-image:url('imagen/1AVA.png');"></div>
+      <div class="hero-content">
+        <div class="hero-tag"><i class="fas fa-calculator"></i> Asesoría contable</div>
+        <div class="hero-title">Tus cuentas<br>En orden</div>
+        <div class="hero-sub">Contabilidad, asesoría tributaria, impuestos y DIAN</div>
+        <button class="hero-cta" onclick="openModal(26)"><i class="fas fa-arrow-right"></i> Ver más</button>
+      </div>
+      <div class="hero-img-side"><img src="imagen/LOGOAVA.jpeg" alt="AVA Asesorías Contables">
+      </div>
+    </div>
+
+    <!-- Slide 14 — Rincón Antillano -->
+    <div class="hero-slide banner-discoteca">
+      <div class="hero-slide-bg" style="background-image:url('imagen/RDISCO.jpeg');"></div>
+      <div class="hero-content">
+        <div class="hero-tag"><i class="fas fa-music"></i> Rumba</div>
+        <div class="hero-title">La casa<br>De la rumba</div>
+        <div class="hero-sub">Música en vivo, pista de baile y servicio de barra</div>
+        <button class="hero-cta" onclick="openModal(64)"><i class="fas fa-arrow-right"></i> Ver más</button>
+      </div>
+      <div class="hero-img-side"><img src="imagen/LOGODISC.jpeg" alt="Discoteca Rincón Antillano">
+      </div>
+    </div>
+
   </div>
 
   <button class="hero-arrow prev" id="heroPrev"><i class="fas fa-chevron-left"></i></button>
@@ -401,7 +479,7 @@ onAuthStateChanged(auth, async (user) => {
   <!-- Oportunidades Hero Banner -->
   <div class="op-hero">
     <div class="op-hero-content">
-      <div class="op-badge"><i class="fas fa-briefcase"></i> Oportunidades</div>
+      <div class="op-badge"><i class="fas fa-briefcase"></i> Empleo</div>
       <h1 class="op-hero-title">Tu próximo paso<br>está cerca</h1>
       <p class="op-hero-sub">Descubre oportunidades de empleo, convocatorias y más en tu comunidad.</p>
     </div>
@@ -409,11 +487,11 @@ onAuthStateChanged(auth, async (user) => {
       <svg class="op-illustration-svg" viewBox="0 0 280 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
           <linearGradient id="opGradSun" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#FF9E66" />
-            <stop offset="100%" stop-color="#E8520A" />
+            <stop offset="0%" stop-color="#FFA3C9" />
+            <stop offset="100%" stop-color="#FF4794" />
           </linearGradient>
           <linearGradient id="opGradBg" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#FFF0E8" stop-opacity="0.9" />
+            <stop offset="0%" stop-color="#FFEAF3" stop-opacity="0.9" />
             <stop offset="100%" stop-color="#FFE4D6" stop-opacity="0.5" />
           </linearGradient>
           <filter id="opShadow" x="-10%" y="-10%" width="120%" height="120%">
@@ -437,7 +515,7 @@ onAuthStateChanged(auth, async (user) => {
         <!-- Elemento flotante: Maletín / Empleo -->
         <g class="op-float-item op-float-2" transform="translate(130, 25)" filter="url(#opShadow)">
           <circle cx="18" cy="18" r="18" fill="#FFFFFF"/>
-          <rect x="9" y="13" width="18" height="13" rx="2.5" fill="#E8520A"/>
+          <rect x="9" y="13" width="18" height="13" rx="2.5" fill="#FF4794"/>
           <path d="M14 13v-2a2 2 0 012-2h4a2 2 0 012 2v2" stroke="#FFFFFF" stroke-width="1.5" fill="none"/>
           <path d="M9 17h18" stroke="#FFFFFF" stroke-width="1" opacity="0.5"/>
         </g>
@@ -461,9 +539,9 @@ onAuthStateChanged(auth, async (user) => {
           <path d="M155 106c0-12 10-20 22-18 8 1 14 7 14 15-4-3-10-4-16-2-4 1-9 5-11 8-3-2-6-3-9-3z" fill="#2C231D"/>
           <path d="M148 160l14-10h16l14 10" stroke="#F8C8A5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
           <rect x="150" y="132" width="40" height="25" rx="3" fill="#2A2A38" filter="url(#opShadow)"/>
-          <rect x="154" y="135" width="32" height="18" rx="1.5" fill="#FFF0E8"/>
+          <rect x="154" y="135" width="32" height="18" rx="1.5" fill="#FFEAF3"/>
           <path d="M140 157h60l-5 6h-50z" fill="#3E3E4E"/>
-          <circle cx="170" cy="144" r="3" fill="#E8520A"/>
+          <circle cx="170" cy="144" r="3" fill="#FF4794"/>
         </g>
       </svg>
     </div>
@@ -493,44 +571,48 @@ onAuthStateChanged(auth, async (user) => {
   <div class="modal" id="modal">
     <div class="modal-handle-row">
       <div class="modal-handle"></div>
-      <button class="modal-close-btn" onclick="document.getElementById('modalOverlay').classList.remove('open'); document.body.style.overflow='';">
+      <button class="modal-close-btn" onclick="closeModalDirect()">
         Cerrar
       </button>
     </div>
+    <!-- a. Carrusel superior (se llena desde openModal) -->
     <div id="modalImgWrap"></div>
+
     <div class="modal-body">
-      <div class="modal-cat" id="modalCat"></div>
-      <div class="modal-title" id="modalTitle"></div>
-      <div class="modal-desc" id="modalDesc"></div>
-
-      <!-- Extra business info -->
-      <div id="modalExtraInfo" class="modal-extra-info" style="display:none"></div>
-
-      <div class="modal-stats" style="grid-template-columns:1fr;">
-        <div class="stat-chip">
-          <div class="val" id="statStatus"><span class="badge badge-open">Abierto</span></div>
-          <div class="lbl">Estado actual</div>
+      <!-- b. Encabezado: nombre, categoría y estado -->
+      <div class="modal-head">
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-badges">
+          <span class="modal-cat-badge" id="modalCat"></span>
+          <span class="badge" id="modalStatus"></span>
         </div>
       </div>
 
-      <div class="modal-actions">
-        <a class="btn btn-whatsapp" id="modalWA" href="#"><i class="fab fa-whatsapp"></i> WhatsApp</a>
-        <a class="btn btn-location" id="modalMapBtn" href="#" target="_blank" rel="noopener noreferrer"><i class="fas fa-map-marker-alt"></i> Mapa</a>
-      </div>
+      <!-- 3. Horarios y dirección -->
+      <section class="ms" id="modalSchedule" style="display:none"></section>
 
-      <!-- Services -->
-      <div id="modalServices" style="display:none;margin-bottom:18px;"></div>
+      <!-- 4. Descripción y especialidades -->
+      <section class="ms" id="modalAbout" style="display:none"></section>
 
-      <!-- Gallery -->
-      <div id="modalGallery" style="display:none;margin-bottom:18px;"></div>
+      <!-- Contacto -->
+      <section class="ms" id="modalContact" style="display:none"></section>
 
-      <h4 style="font-size:14px;font-weight:600;margin-bottom:10px;">📍 Ubicación</h4>
+      <!-- 5. Redes sociales -->
+      <section class="ms" id="modalSocial" style="display:none"></section>
+
+      <h4 class="ms-title" style="margin:6px 2px 10px;"><i class="fas fa-map-marker-alt" style="color:#3498DB;margin-right:6px;"></i>Ubicación</h4>
       <a id="modalMapPlaceholder" href="#" target="_blank" rel="noopener noreferrer" style="text-decoration:none;display:block;">
         <div class="map-placeholder" id="modalMapBox">
           <i class="fas fa-map-marked-alt"></i>
           <span id="modalMapLabel">Ver en Google Maps</span>
         </div>
       </a>
+    </div>
+
+    <!-- c. Barra de acción fija (CTA) -->
+    <div class="modal-cta">
+      <a class="btn btn-whatsapp" id="modalWA" href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> Chatear por WhatsApp</a>
+      <a class="btn btn-location" id="modalMapBtn" href="#" target="_blank" rel="noopener noreferrer"><i class="fas fa-location-arrow"></i> Cómo llegar</a>
     </div>
   </div>
 </div>
@@ -562,7 +644,7 @@ onAuthStateChanged(auth, async (user) => {
   <button class="nav-item" id="navExplorar" onclick="goToExplorar()" aria-label="Explorar"><i class="fas fa-compass" aria-hidden="true"></i><span>Explorar</span></button>
   <button class="nav-item" id="navFavoritos" onclick="showFavsNav()" aria-label="Favoritos"><i class="fas fa-heart" aria-hidden="true"></i><span>Favoritos</span></button>
   <button class="nav-item" id="navNoticias" onclick="goToNoticias()" aria-label="Noticias"><i class="fas fa-newspaper" aria-hidden="true"></i><span>Noticias</span></button>
-  <button class="nav-item" id="navOportunidades" onclick="goToOportunidades()" aria-label="Oportunidades"><i class="fas fa-briefcase" aria-hidden="true"></i><span>Oportunidades</span></button>
+  <button class="nav-item" id="navOportunidades" onclick="goToOportunidades()" aria-label="Empleo"><i class="fas fa-briefcase" aria-hidden="true"></i><span>Empleo</span></button>
 </nav>
 
 <!-- PROFILE / LOGIN PANEL -->
@@ -706,7 +788,7 @@ const EMOJIS = {
 };
 
 const BG_COLORS = {
-  comida: '#FFF0E8', salud: '#E8F7EE', servicios: '#EEF0FF',
+  comida: '#FFEAF3', salud: '#E8F7EE', servicios: '#EEF0FF',
   belleza: '#FCEEF6', educacion: '#F3EEFF',
   moda:'#1FE099', tecnologia: '#EEF0FF', transporte: '#0EA2C4', profesionales:'#D0872E'
 };
@@ -718,7 +800,7 @@ const data = [
 
 
 {
-    id:1, name:'ITGEM', cat:'educacion',
+    id:1, name:'ITGEM', cat:'educacion', waLabel:'¿Te ayudamos en algo?',
     desc:'Instituto Técnico de Gestión Empresarial. Carreras técnicas laborales, seminarios, diplomados y capacitaciones.',
     rating:4.9, reviews:78, open:true,
     address:'Carrera 18 # 17-10, Barrio Luis A. Robles (Col. San Pedro Claver)',
@@ -2245,67 +2327,194 @@ function closeModal(e) {
 function closeModalDirect() {
   const modal = document.getElementById('modalOverlay');
   if (modal) modal.classList.remove('open');
+  clearInterval(modalCarouselTimer);
+  document.body.classList.remove('modal-open');
   document.body.style.overflow = '';
 }
 
-// Modal
+// ── FICHA DEL NEGOCIO ──
+let modalCarouselTimer = null;
+let modalCarouselPausedUntil = 0;
+const CAT_LABELS = {
+  comida:'Comida', salud:'Salud', servicios:'Servicios', belleza:'Belleza', educacion:'Educación',
+  moda:'Moda', tecnologia:'Tecnología', transporte:'Transporte', discoteca:'Discoteca', profesionales:'Profesionales'
+};
+
+// 780 min → "1 pm" · 1050 min → "5:30 pm"
+function fmtMins(m) {
+  const h24 = Math.floor(m / 60), mm = m % 60;
+  const h = h24 % 12 || 12;
+  return (mm ? `${h}:${String(mm).padStart(2, '0')}` : `${h}`) + (h24 >= 12 ? ' pm' : ' am');
+}
+
+// Estado junto al nombre: "Abierto hasta las 5 pm" / "Cerrado, abre hoy a las 8 am"
+function modalStatusInfo(item) {
+  const r = isOpenNow(item.hours, true);
+  if (r && typeof r === 'object') {
+    if (r.open) {
+      if (r.openMin === 0 && r.closeMin >= 1439) return { open: true, text: 'Abierto 24 horas' };
+      return { open: true, text: `Abierto hasta las ${fmtMins(r.closeMin)}` };
+    }
+    return { open: false, text: r.openMin !== undefined ? `Cerrado, abre hoy a las ${fmtMins(r.openMin)}` : 'Cerrado' };
+  }
+  return { open: !!item.open, text: item.open ? 'Abierto' : 'Cerrado' };
+}
+
+// Logo (si existe) + foto principal + galería, sin repetidos
+function buildModalSlides(item) {
+  const list = [item.logo, item.img, ...(item.gallery || [])]
+    .filter(s => s && typeof s === 'string' && s.trim() !== '');
+  return [...new Set(list)];
+}
+
+function renderModalCarousel(item, slides, emoji, bg) {
+  if (!slides.length) return `<div class="modal-img-placeholder" style="background:${bg}">${emoji}</div>`;
+  const multi = slides.length > 1;
+  const slidesHTML = slides.map((src, i) => {
+    const isVideo = /\.(mp4|webm|ogg)$/i.test(src);
+    const media = isVideo
+      ? `<video src="${src}" muted playsinline preload="metadata" class="mc-media"></video><span class="mc-play"><i class="fas fa-play"></i></span>`
+      : `<img src="${src}" alt="${item.name.trim()}, foto ${i + 1}" class="mc-media" decoding="async"${i === 0 ? '' : ' loading="lazy"'}>`;
+    const bgStyle = isVideo ? '' : ` style="--mc-src:url('${src}')"`;
+    return `<div class="mc-slide"${bgStyle} onclick="openLightbox(${i})">${media}</div>`;
+  }).join('');
+  return `<div class="mc" aria-roledescription="carrusel">
+    <div class="mc-track" id="mcTrack">${slidesHTML}</div>
+    ${multi ? `
+    <button class="mc-arrow mc-prev" type="button" aria-label="Foto anterior" onclick="modalCarouselGo(-1)"><i class="fas fa-chevron-left"></i></button>
+    <button class="mc-arrow mc-next" type="button" aria-label="Foto siguiente" onclick="modalCarouselGo(1)"><i class="fas fa-chevron-right"></i></button>
+    <div class="mc-dots" id="mcDots">${slides.map((_, i) => `<span class="mc-dot${i === 0 ? ' active' : ''}"></span>`).join('')}</div>` : ''}
+  </div>`;
+}
+
+function pauseModalCarousel(ms = 8000) { modalCarouselPausedUntil = Date.now() + ms; }
+
+function modalCarouselGo(dir) {
+  const t = document.getElementById('mcTrack');
+  if (!t) return;
+  const n = t.children.length;
+  const cur = Math.round(t.scrollLeft / t.clientWidth);
+  t.scrollTo({ left: ((cur + dir + n) % n) * t.clientWidth, behavior: 'smooth' });
+  pauseModalCarousel();
+}
+
+function initModalCarousel() {
+  clearInterval(modalCarouselTimer);
+  modalCarouselPausedUntil = 0;
+  const t = document.getElementById('mcTrack');
+  if (!t || t.children.length < 2) return;
+  const dots = [...document.querySelectorAll('#mcDots .mc-dot')];
+  t.addEventListener('scroll', () => {
+    const n = Math.round(t.scrollLeft / t.clientWidth);
+    dots.forEach((d, k) => d.classList.toggle('active', k === n));
+  }, { passive: true });
+  ['pointerdown', 'touchstart', 'wheel'].forEach(ev =>
+    t.addEventListener(ev, () => pauseModalCarousel(), { passive: true }));
+  t.addEventListener('mouseenter', () => { modalCarouselPausedUntil = Infinity; });
+  t.addEventListener('mouseleave', () => pauseModalCarousel(2000));
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  modalCarouselTimer = setInterval(() => {
+    const lb = document.getElementById('lightbox');
+    if (document.hidden || Date.now() < modalCarouselPausedUntil || (lb && lb.classList.contains('open'))) return;
+    const n = t.children.length;
+    const cur = Math.round(t.scrollLeft / t.clientWidth);
+    t.scrollTo({ left: ((cur + 1) % n) * t.clientWidth, behavior: 'smooth' });
+  }, 4000);
+}
+
+// ¿La etiqueta de días ("Lun–Vie", "Sáb–Dom", "Mar") incluye el día de hoy?
+function hoursLabelIsToday(label) {
+  const DAY = { dom: 0, lun: 1, mar: 2, mie: 3, jue: 4, vie: 5, sab: 6 };
+  const days = label.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .split(/[-–—]/).map(s => DAY[s.trim().slice(0, 3)]);
+  if (!days.length || days.some(d => d === undefined)) return false;
+  const today = new Date().getDay();
+  const [from, to = from] = days;
+  return from <= to ? today >= from && today <= to : today >= from || today <= to;
+}
+
+// "8am–12m / 2pm–5pm" → ["8 am – 12 pm", "2 pm – 5 pm"] (una línea por rango)
+function prettyHoursTime(time) {
+  return time.split('/').map(r => r.trim()
+    .replace(/\b12\s*m\b/gi, '12 pm')
+    .replace(/(\d)\s*(am|pm)/gi, '$1 $2')
+    .replace(/\s*[–—-]\s*/g, ' – ')
+    .replace(/^cerrado$/i, 'Cerrado'));
+}
+
+// "Lun–Vie 8am–5pm · Sáb 8am–1pm · Fest: cerrado" → filas día / horario alineadas
+function renderHoursRows(hours) {
+  return hours.split('·').map(s => s.trim()).filter(Boolean).map(seg => {
+    const i = seg.search(/\d/);
+    let day, time;
+    if (i > 0)        { day = seg.slice(0, i).replace(/[:\s]+$/, ''); time = seg.slice(i).trim(); }
+    else if (i === 0) { day = 'Todos los días'; time = seg; }
+    else { const p = seg.split(':'); day = p[0].trim(); time = (p[1] || '').trim() || seg; }
+    if (/^fest/i.test(day)) day = 'Festivos';
+    const today = hoursLabelIsToday(day);
+    return `<div class="hours-row${today ? ' is-today' : ''}">
+      <span class="hours-day">${day}${today ? '<em class="hours-hoy">Hoy</em>' : ''}</span>
+      <span class="hours-time">${prettyHoursTime(time).map(t => `<span>${t}</span>`).join('')}</span>
+    </div>`;
+  }).join('');
+}
+
+// Enlace de "Cómo llegar": maps (enlace directo) > lat/lng (pin exacto) > nombre + dirección
+function buildMapsUrl(item) {
+  if (item.maps) return item.maps;
+  if (item.lat != null && item.lng != null)
+    return `https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lng}`;
+  if (!item.address) return null;
+  const q = encodeURIComponent(`${item.name.trim()}, ${item.address}, Puerto Tejada, Cauca, Colombia`);
+  return `https://www.google.com/maps/dir/?api=1&destination=${q}`;
+}
+
+function socialBtn(href, cls, icon, label) {
+  return `<a class="social-btn ${cls}" href="${href}" target="_blank" rel="noopener noreferrer"><i class="${icon}"></i><span>${label}</span></a>`;
+}
+
 function openModal(id) {
   const item = data.find(d => d.id === id);
   if (!item) return;
   const emoji = EMOJIS[item.cat] || '🏪';
   const bg = BG_COLORS[item.cat] || '#f5f5f5';
+  const name = item.name.trim();
 
-  // Configuración de la galería secuencial
-  const validGallery = (item.gallery || []).filter(src => src && typeof src === 'string' && src.trim() !== '');
-  currentGallery = validGallery.length ? validGallery : (item.img ? [item.img] : []);
+  // a. Carrusel superior (la galería del lightbox usa las mismas fotos, en el mismo orden)
+  currentGallery = buildModalSlides(item);
+  document.getElementById('modalImgWrap').innerHTML = renderModalCarousel(item, currentGallery, emoji, bg);
+  initModalCarousel();
 
-  // Header image
-  const imgWrap = document.getElementById('modalImgWrap');
-  imgWrap.innerHTML = item.img
-    ? `<div class="modal-img-wrap-real" style="--modal-img-src:url('${item.img}')">
-         <img src="${item.img}" class="modal-img-real" alt="${item.name}">
-         ${currentGallery.length > 1 ? `<div class="modal-img-badge"><i class="fas fa-layer-group"></i> ${currentGallery.length} multimedia</div>` : ''}
-       </div>`
-    : `<div class="modal-img-placeholder" style="background:${bg}">${emoji}</div>`;
+  // b. Encabezado
+  document.getElementById('modalTitle').textContent = name;
+  document.getElementById('modalCat').textContent = CAT_LABELS[item.cat] || (item.cat.charAt(0).toUpperCase() + item.cat.slice(1));
+  const st = modalStatusInfo(item);
+  const stEl = document.getElementById('modalStatus');
+  stEl.className = 'badge ' + (st.open ? 'badge-open' : 'badge-close');
+  stEl.textContent = st.text;
 
-  if (currentGallery.length > 0) {
-    imgWrap.style.cursor = 'pointer';
-    imgWrap.onclick = () => openLightbox(0);
-    imgWrap.title = 'Toca para abrir la galería';
-  } else {
-    imgWrap.style.cursor = 'default';
-    imgWrap.onclick = null;
-    imgWrap.title = '';
-  }
-
-  document.getElementById('modalTitle').textContent = item.name;
-  document.getElementById('modalCat').textContent = item.cat.charAt(0).toUpperCase() + item.cat.slice(1);
-  document.getElementById('modalDesc').textContent = item.desc;
-  
-  const statusEl = document.getElementById('statStatus');
-  if (statusEl) {
-    statusEl.innerHTML = `<span class="badge ${item.open ? 'badge-open' : 'badge-close'}">${item.open ? 'Abierto' : 'Cerrado'}</span>`;
-  }
-
-  // WhatsApp — prefer item.whatsapp, fallback to PHONES map
+  // c. CTA — 5. WhatsApp con mensaje que identifica el origen
   const waNum = item.whatsapp || PHONES[item.id] || '3000000000';
-  document.getElementById('modalWA').href = `https://wa.me/57${waNum}`;
-  document.getElementById('modalWA').rel  = 'noopener noreferrer';
+  const waMsg = `Hola, vi su negocio *${name}* en Conexión Local (conexionlocal.com) y quisiera más información.`;
+  const waBtn = document.getElementById('modalWA');
+  waBtn.href = `https://wa.me/57${waNum}?text=${encodeURIComponent(waMsg)}`;
+  waBtn.target = '_blank';
+  waBtn.rel = 'noopener noreferrer';
+  waBtn.innerHTML = '<i class="fab fa-whatsapp"></i> ' + (item.waLabel || 'Chatear por WhatsApp');
 
-  // Mapa button — build Google Maps URL from address
+  // c. CTA — Cómo llegar
   const mapBtn = document.getElementById('modalMapBtn');
   const mapPlaceholder = document.getElementById('modalMapPlaceholder');
   const mapBox = document.getElementById('modalMapBox');
   const mapLabel = document.getElementById('modalMapLabel');
-  if (item.address) {
-    const query = encodeURIComponent(item.address + ', Puerto Tejada, Cauca, Colombia');
-    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${query}`;
+  const mapsUrl = buildMapsUrl(item);
+  if (mapsUrl) {
     mapBtn.href = mapsUrl;
     mapBtn.target = '_blank';
     mapBtn.style.opacity = '1';
     mapBtn.style.pointerEvents = 'auto';
     mapPlaceholder.href = mapsUrl;
-    mapLabel.textContent = item.address;
+    mapLabel.textContent = item.address || 'Ver en Google Maps';
     mapBox.style.cursor = 'pointer';
   } else {
     mapBtn.href = '#';
@@ -2316,77 +2525,48 @@ function openModal(id) {
     mapLabel.textContent = 'Dirección no disponible';
   }
 
-  // Extra info block
-  const infoEl = document.getElementById('modalExtraInfo');
-  let infoHTML = '';
-  if (item.address)   infoHTML += `<div class="info-row"><i class="fas fa-map-marker-alt"></i><span>${item.address}</span></div>`;
-  if (item.phone)     infoHTML += `<div class="info-row"><i class="fas fa-phone"></i><span>${item.phone}</span></div>`;
-  if (item.whatsapp)  infoHTML += `<div class="info-row"><i class="fab fa-whatsapp"></i><span>${item.whatsapp}</span></div>`;
-  if (item.email)     infoHTML += `<div class="info-row"><i class="fas fa-envelope"></i><span>${item.email}</span></div>`;
-  if (item.hours)     infoHTML += `<div class="info-row"><i class="fas fa-clock"></i><span>${item.hours}</span></div>`;
-  if (item.catalog)   infoHTML += `<div class="info-row"><i class="fas fa-book-open"></i><a href="${item.catalog}" target="_blank" rel="noopener noreferrer" style="color:var(--primary);font-weight:600;text-decoration:none;">Ver catálogo</a></div>`;
+  // 3. Horarios y dirección (con referencia opcional: item.reference)
+  let sched = '';
+  if (item.address) sched += `<div class="ms-row"><i class="fas fa-map-marker-alt"></i><div><div>${item.address}</div>${item.reference ? `<div class="ms-ref">${item.reference}</div>` : ''}</div></div>`;
+  if (item.hours)   sched += `<div class="ms-row"><i class="fas fa-clock"></i><div class="hours-list">${renderHoursRows(item.hours)}</div></div>`;
+  const schedEl = document.getElementById('modalSchedule');
+  schedEl.innerHTML = sched ? `<div class="ms-title">Horarios y dirección</div>${sched}` : '';
+  schedEl.style.display = sched ? 'block' : 'none';
 
-  if (item.instagram)
-  infoHTML += `
-    <div class="info-row">
-      <i class="fab fa-instagram"></i>
-      <a href="${item.instagram}" target="_blank" rel="noopener noreferrer"
-         style="color:var(--primary);font-weight:600;text-decoration:none;">
-         Instagram
-      </a>
-    </div>`;
+  // 4. Descripción y especialidades
+  const tags = (item.services || []).flatMap(s => String(s).split(','))
+    .map(s => s.trim()).filter(Boolean)
+    .map(s => s.charAt(0).toUpperCase() + s.slice(1));
+  let about = '';
+  if (item.desc) about += `<p class="ma-desc">${item.desc}</p>`;
+  if (tags.length) about += `<div class="ms-title">Productos y servicios</div><div class="services-tags">${tags.map(s => `<span class="service-tag">${s}</span>`).join('')}</div>`;
+  const aboutEl = document.getElementById('modalAbout');
+  aboutEl.innerHTML = about;
+  aboutEl.style.display = about ? 'block' : 'none';
 
-  if (item.facebook)
-  infoHTML += `
-    <div class="info-row">
-      <i class="fab fa-facebook"></i>
-      <a href="${item.facebook}" target="_blank" rel="noopener noreferrer"
-         style="color:var(--primary);font-weight:600;text-decoration:none;">
-         Facebook
-      </a>
-    </div>`;
-  infoEl.innerHTML = infoHTML;
-  infoEl.style.display = infoHTML ? 'block' : 'none';
+  // Contacto
+  let contact = '';
+  if (item.phone)   contact += `<div class="ms-row"><i class="fas fa-phone"></i><a href="tel:+57${item.phone}">${item.phone}</a></div>`;
+  if (item.email)   contact += `<div class="ms-row"><i class="fas fa-envelope"></i><a href="mailto:${item.email}">${item.email}</a></div>`;
+  if (item.catalog) contact += `<div class="ms-row"><i class="fas fa-book-open"></i><a href="${item.catalog}" target="_blank" rel="noopener noreferrer">Ver catálogo</a></div>`;
+  const contactEl = document.getElementById('modalContact');
+  contactEl.innerHTML = contact ? `<div class="ms-title">Contacto</div>${contact}` : '';
+  contactEl.style.display = contact ? 'block' : 'none';
 
-  // Services tags
-  const servEl = document.getElementById('modalServices');
-  if (item.services && item.services.length) {
-    servEl.innerHTML = `<div class="services-title">🛠️ Productos y servicios</div>
-      <div class="services-tags">${item.services.map(s => `<span class="service-tag">${s}</span>`).join('')}</div>`;
-    servEl.style.display = 'block';
-  } else {
-    servEl.style.display = 'none';
-  }
+  // 5. Redes sociales con su logo y color (campos opcionales: tiktok, youtube, web)
+  let social = '';
+  if (item.instagram) social += socialBtn(item.instagram, 'social-ig',  'fab fa-instagram', 'Instagram');
+  if (item.facebook)  social += socialBtn(item.facebook,  'social-fb',  'fab fa-facebook-f', 'Facebook');
+  if (item.tiktok)    social += socialBtn(item.tiktok,    'social-tt',  'fab fa-tiktok', 'TikTok');
+  if (item.youtube)   social += socialBtn(item.youtube,   'social-yt',  'fab fa-youtube', 'YouTube');
+  if (item.web)       social += socialBtn(item.web,       'social-web', 'fas fa-globe', 'Sitio web');
+  const socialEl = document.getElementById('modalSocial');
+  socialEl.innerHTML = social ? `<div class="ms-title">Redes sociales</div><div class="social-list">${social}</div>` : '';
+  socialEl.style.display = social ? 'block' : 'none';
 
-  // Gallery
-  const galEl = document.getElementById('modalGallery');
-  if (currentGallery.length > 0) {
-    galEl.innerHTML = `
-      <div class="gallery-title" style="display:flex;align-items:center;justify-content:space-between;">
-        <span>📸 Fotos y videos <span style="font-size:12px;opacity:0.65;font-weight:normal;">(Toca para deslizar)</span></span>
-        <span class="gallery-badge-count">${currentGallery.length}</span>
-      </div>
-      <div class="gallery-strip">${currentGallery.map((src, i) => {
-        const isVideo = /\.(mp4|webm|ogg)$/i.test(src);
-        if (isVideo) {
-          return `<div class="gallery-thumb" onclick="openLightbox(${i})" title="Ver video ${i+1}">
-            <video src="${src}" muted preload="metadata" class="gallery-video-thumb"></video>
-            <div class="gallery-thumb-overlay"><i class="fas fa-play"></i></div>
-          </div>`;
-        } else {
-          return `<div class="gallery-thumb" onclick="openLightbox(${i})" title="Ver foto ${i+1}">
-            <img src="${src}" alt="Foto ${i+1}">
-            <div class="gallery-thumb-overlay"><i class="fas fa-expand"></i></div>
-          </div>`;
-        }
-      }).join('')}
-      </div>`;
-    galEl.style.display = 'block';
-  } else {
-    galEl.style.display = 'none';
-  }
-
+  document.getElementById('modal').scrollTop = 0;
   document.getElementById('modalOverlay').classList.add('open');
+  document.body.classList.add('modal-open');
   document.body.style.overflow = 'hidden';
 }
 
@@ -2423,19 +2603,23 @@ document.getElementById('searchInput').addEventListener('input', e => {
 });
 
 // ── HORARIO INTELIGENTE ──
-function isOpenNow(hoursStr) {
+function isOpenNow(hoursStr, detail = false) {
   if (!hoursStr) return null;
 
   const now     = new Date();
   const today   = now.getDay();   // 0=Dom,1=Lun,...,6=Sáb
   const curMins = now.getHours() * 60 + now.getMinutes();
 
-  // Normaliza texto: minúsculas, tildes → sin tilde, em-dash → guion normal
+  // detail=false → true/false · detail=true → { open, openMin, closeMin }
+  const out = (open, openMin, closeMin) => detail ? { open, openMin, closeMin } : open;
+
+  // Normaliza texto: minúsculas, tildes → sin tilde, em-dash → guion normal, "12m" → 12:00pm
   function norm(s) {
     return s.toLowerCase()
       .replace(/[–—]/g, '-')
       .replace(/á/g,'a').replace(/é/g,'e')
-      .replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u');
+      .replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u')
+      .replace(/\b12\s*m\b/g, '12:00pm');
   }
 
   // Día en número a partir de prefijo 3-letras sin tilde
@@ -2465,14 +2649,12 @@ function isOpenNow(hoursStr) {
     // Ignorar festivos
     if (seg.startsWith('fest')) continue;
 
-    // Extraer bloque de días al inicio: "lun-sab", "dom", "lun"
-    // Usamos índice del primer dígito para separar días de horario
     const firstDigit = seg.search(/\d/);
     if (firstDigit === -1) {
       // sin dígito → puede ser "lun: cerrado"
       if (seg.includes('cerrado')) {
         const dName = seg.split(/[\s:\-]/)[0];
-        if (dayNum(dName) === today) return false;
+        if (dayNum(dName) === today) return out(false);
       }
       continue;
     }
@@ -2495,17 +2677,18 @@ function isOpenNow(hoursStr) {
     if (!applies) continue;
 
     // ¿Cerrado explícito?
-    if (timePart.includes('cerrado')) return false;
+    if (timePart.includes('cerrado')) return out(false);
 
-    // Extraer horas de apertura y cierre
-    // Formato: "8am-5pm" o "8:00 am - 5:00 pm"
-    const timeMatch = timePart.match(/([\d]+(?::\d+)?\s*(?:am|pm))\s*-\s*([\d]+(?::\d+)?\s*(?:am|pm))/i);
-    if (!timeMatch) continue;
+    // Uno o varios rangos: "8am-12m / 2pm-5pm"
+    const ranges = [...timePart.matchAll(/(\d+(?::\d+)?\s*(?:am|pm))\s*-\s*(\d+(?::\d+)?\s*(?:am|pm))/g)]
+      .map(m => [toMins(m[1]), toMins(m[2])]);
+    if (!ranges.length) continue;
 
-    const openMin  = toMins(timeMatch[1]);
-    const closeMin = toMins(timeMatch[2]);
+    const current = ranges.find(([o, c]) => curMins >= o && curMins < c);
+    if (current) return out(true, current[0], current[1]);
 
-    return curMins >= openMin && curMins < closeMin;
+    const next = ranges.find(([o]) => o > curMins);
+    return out(false, next ? next[0] : undefined);
   }
 
   return null; // no se pudo determinar
