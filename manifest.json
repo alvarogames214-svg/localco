@@ -12,8 +12,8 @@
     "standalone"
   ],
   "orientation": "portrait-primary",
-  "background_color": "#FAF8F5",
-  "theme_color": "#FF4794",
+  "background_color": "#F4F8FB",
+  "theme_color": "#0A74C2",
   "prefer_related_applications": false,
   "icons": [
     {
