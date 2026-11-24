@@ -1,5 +1,5 @@
 /* Conexión Local — Service Worker */
-const CACHE_NAME = 'conexion-local-v18'; // ← sube la versión para forzar actualización
+const CACHE_NAME = 'conexion-local-v19'; // ← sube la versión para forzar actualización
 const APP_SHELL = [
   './',
   './index.html',
@@ -17,7 +17,7 @@ const APP_SHELL = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(APP_SHELL))
+      .then(cache => Promise.allSettled(APP_SHELL.map(u => cache.add(new Request(u, { cache: 'reload' })))))
       .then(() => self.skipWaiting())
   );
 });
@@ -47,7 +47,7 @@ self.addEventListener('fetch', (event) => {
       caches.open(CACHE_NAME).then(async cache => {
         const cached = await cache.match('./index.html');
 
-        const networkFetch = fetch(request).then(response => {
+        const networkFetch = fetch(request, { cache: 'no-cache' }).then(response => {
           if (response.ok) {
             cache.put('./index.html', response.clone());
 
@@ -73,7 +73,7 @@ self.addEventListener('fetch', (event) => {
   // CSS / JS / manifest propios → Network First (siempre el más reciente; caché solo si no hay red)
   if (isSameOrigin && /\.(css|js|json)$/.test(url.pathname)) {
     event.respondWith(
-      fetch(request).then(response => {
+      fetch(request, { cache: 'no-cache' }).then(response => {
         if (response.ok) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then(c => c.put(request, clone));

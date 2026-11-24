@@ -3854,23 +3854,31 @@ body.dark .opb-tx b { color: #F0F6FB; } body.dark .opb-tx small { color: #9BB0C5
 @media (prefers-reduced-motion: reduce) { .opb *, .opb *::before, .opb *::after { animation: none !important; } }
 
 
-/* ── Íconos de las tarjetas con vida propia ── */
-.opb-ic { position: relative; }
+/* ── Íconos de las tarjetas con vida propia · v19 ── */
+.opb-ic { position: relative; animation: opbBreathe 3.2s ease-in-out var(--rd, 0s) infinite; }
 .opb-ic i { display: inline-block; transform-origin: 50% 60%; }
 .opb-ic::before {                       /* anillo que se expande desde el círculo */
   content: ''; position: absolute; inset: 0; border-radius: 50%; border: 2px solid currentColor;
-  opacity: 0; pointer-events: none; animation: opbRing 3.2s ease-out var(--rd, 0s) infinite;
+  opacity: 0; pointer-events: none; animation: opbRing 2.6s ease-out var(--rd, 0s) infinite;
 }
-.c1 { --rd: 0s; } .c2 { --rd: 0.6s; } .c3 { --rd: 1.2s; } .c4 { --rd: 1.8s; } .c5 { --rd: 2.4s; }
-.c1 .opb-ic i { animation: opbDoc 4s ease-in-out 1.6s infinite; }      /* perfil: se acomoda como hoja */
-.c2 .opb-ic i { animation: opbCap 4.6s ease-in-out 1.8s infinite; }    /* birrete: salto de graduación */
-.c3 .opb-ic i { animation: opbCase 4.2s ease-in-out 2s infinite; }     /* maletín: rebote */
-.c4 .opb-ic i { animation: opbLink 3.4s ease-in-out 1.7s infinite; }   /* conecta: pulso de red */
-.c5 .opb-ic i { animation: opbScan 3.8s ease-in-out 1.5s infinite; }   /* lupa: rastrea */
+.c1 { --rd: 0s; } .c2 { --rd: 0.5s; } .c3 { --rd: 1s; } .c4 { --rd: 1.5s; } .c5 { --rd: 2s; }
+.c1 .opb-ic i { animation: opbDoc 2.8s ease-in-out infinite; }     /* perfil: se acomoda como hoja */
+.c2 .opb-ic i { animation: opbCap 2.6s ease-in-out infinite; }     /* birrete: salto de graduación */
+.c3 .opb-ic i { animation: opbCase 2.8s ease-in-out infinite; }    /* maletín: rebote */
+.c4 .opb-ic i { animation: opbLink 2.4s ease-in-out infinite; }    /* conecta: pulso de red */
+.c5 .opb-ic i { animation: opbScan 3s ease-in-out infinite; }      /* lupa: rastrea */
 
-@keyframes opbRing { 0% { transform: scale(1); opacity: 0.38; } 70%, 100% { transform: scale(1.45); opacity: 0; } }
-@keyframes opbDoc  { 0%, 45%, 100% { transform: rotate(0) translateY(0); } 12% { transform: rotate(-9deg) translateY(-2px); } 26% { transform: rotate(7deg) translateY(-1px); } 36% { transform: rotate(-3deg); } }
-@keyframes opbCap  { 0%, 40%, 100% { transform: translateY(0) rotate(0); } 12% { transform: translateY(-8px) rotate(-14deg); } 26% { transform: translateY(1px) rotate(7deg); } 33% { transform: translateY(0) rotate(-2deg); } }
-@keyframes opbCase { 0%, 50%, 100% { transform: translateY(0) scale(1, 1); } 8% { transform: translateY(0) scale(1.1, 0.88); } 22% { transform: translateY(-9px) scale(0.95, 1.08); } 38% { transform: translateY(0) scale(1.08, 0.92); } 46% { transform: scale(0.98, 1.02); } }
-@keyframes opbLink { 0%, 100% { transform: scale(1); } 20% { transform: scale(1.18); } 38% { transform: scale(0.96); } 52% { transform: scale(1.08); } 70% { transform: scale(1); } }
+@keyframes opbBreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+@keyframes opbRing { 0% { transform: scale(1); opacity: 0.4; } 70%, 100% { transform: scale(1.45); opacity: 0; } }
+@keyframes opbDoc  { 0%, 100% { transform: rotate(-8deg) translateY(0); } 50% { transform: rotate(8deg) translateY(-3px); } }
+@keyframes opbCap  { 0%, 100% { transform: translateY(0) rotate(-9deg); } 50% { transform: translateY(-6px) rotate(9deg); } }
+@keyframes opbCase { 0%, 55%, 100% { transform: translateY(0) scale(1, 1); } 10% { transform: scale(1.1, 0.88); } 28% { transform: translateY(-9px) scale(0.95, 1.08); } 45% { transform: translateY(0) scale(1.08, 0.92); } }
+@keyframes opbLink { 0%, 100% { transform: scale(1); } 25% { transform: scale(1.2); } 45% { transform: scale(0.95); } 60% { transform: scale(1.1); } }
 @keyframes opbScan { 0%, 100% { transform: translate(0, 0) rotate(0); } 25% { transform: translate(4px, -4px) rotate(-10deg); } 50% { transform: translate(-4px, -1px) rotate(8deg); } 75% { transform: translate(2px, 4px) rotate(-4deg); } }
+
+/* Con "reducir movimiento" se quita lo que se desplaza, pero se conserva un pulso suave (solo escala y opacidad) */
+@media (prefers-reduced-motion: reduce) {
+  .opb-ic { animation: opbBreathe 3.6s ease-in-out infinite !important; }
+  .opb-ic::before { animation: opbRing 3.2s ease-out var(--rd, 0s) infinite !important; }
+  .c4 .opb-ic i { animation: opbLink 3.4s ease-in-out infinite !important; }
+}
