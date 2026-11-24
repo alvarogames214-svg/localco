@@ -11,7 +11,7 @@
 
 <title>Conexión Local</title>
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="estilo.css?v=16">
+<link rel="stylesheet" href="estilo.css?v=17">
 <meta name="theme-color" content="#0A74C2">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -485,73 +485,39 @@ onAuthStateChanged(auth, async (user) => {
 <!-- SECCIÓN OPORTUNIDADES -->
 <div id="sectionOportunidades" class="section-oportunidades" style="display:none;">
   <!-- Oportunidades Hero Banner -->
-  <div class="op-hero">
-    <div class="op-hero-content">
-      <div class="op-badge"><i class="fas fa-briefcase"></i> Empleo</div>
-      <h1 class="op-hero-title">Tu próximo paso<br>está cerca</h1>
-      <p class="op-hero-sub">Descubre oportunidades de empleo, convocatorias y más en tu comunidad.</p>
+  <div class="op-hero opb">
+    <div class="opb-copy">
+      <div class="opb-badge"><i class="fas fa-briefcase"></i> EMPLEO</div>
+      <h2 class="opb-title">Tu próximo paso<br>está cerca</h2>
+      <p class="opb-sub">Descubre oportunidades de empleo, convocatorias y más en tu comunidad.</p>
+      <button type="button" class="opb-cta" onclick="document.querySelector('.op-section-header').scrollIntoView({behavior:'smooth',block:'start'})">
+        <i class="fas fa-search"></i><span>Explorar empleos</span><i class="fas fa-arrow-right opb-arrow"></i>
+      </button>
+      <ul class="opb-points">
+        <li class="p-blue"><i class="fas fa-users"></i><span>Oportunidades<br>en tu localidad</span></li>
+        <li class="p-green"><i class="fas fa-shield-alt"></i><span>Información<br>confiable</span></li>
+        <li class="p-purple"><i class="fas fa-map-marker-alt"></i><span>Conectando<br>tu futuro</span></li>
+      </ul>
     </div>
-    <div class="op-hero-art">
-      <svg class="op-illustration-svg" viewBox="0 0 280 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs>
-          <linearGradient id="opGradSun" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#8FD0F7" />
-            <stop offset="100%" stop-color="#0A74C2" />
-          </linearGradient>
-          <linearGradient id="opGradBg" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#E3F1FB" stop-opacity="0.9" />
-            <stop offset="100%" stop-color="#FFE4D6" stop-opacity="0.5" />
-          </linearGradient>
-          <filter id="opShadow" x="-10%" y="-10%" width="120%" height="120%">
-            <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.08" />
-          </filter>
-        </defs>
-        <!-- Resplandor de fondo -->
-        <g class="op-art-glow">
-          <circle cx="190" cy="100" r="80" fill="url(#opGradBg)"/>
-          <circle cx="90" cy="140" r="40" fill="url(#opGradBg)" opacity="0.6"/>
-        </g>
-        
-        <!-- Elemento flotante: Birrete / Educación -->
-        <g class="op-float-item op-float-1" transform="translate(195, 20)" filter="url(#opShadow)">
-          <circle cx="20" cy="20" r="18" fill="#FFFFFF"/>
-          <path d="M12 18l8-4 8 4-8 4-8-4z" fill="#2C231D"/>
-          <path d="M15 20.5v3.5c0 2 2.5 3.5 5 3.5s5-1.5 5-3.5v-3.5" fill="#2C231D"/>
-          <path d="M25 19.5v5" stroke="#F5A623" stroke-width="1.5" stroke-linecap="round"/>
-        </g>
-        
-        <!-- Elemento flotante: Maletín / Empleo -->
-        <g class="op-float-item op-float-2" transform="translate(130, 25)" filter="url(#opShadow)">
-          <circle cx="18" cy="18" r="18" fill="#FFFFFF"/>
-          <rect x="9" y="13" width="18" height="13" rx="2.5" fill="#0A74C2"/>
-          <path d="M14 13v-2a2 2 0 012-2h4a2 2 0 012 2v2" stroke="#FFFFFF" stroke-width="1.5" fill="none"/>
-          <path d="M9 17h18" stroke="#FFFFFF" stroke-width="1" opacity="0.5"/>
-        </g>
-
-        <!-- Elemento flotante: Documento / Convocatoria -->
-        <g class="op-float-item op-float-3" transform="translate(230, 60)" filter="url(#opShadow)">
-          <circle cx="16" cy="16" r="16" fill="#FFFFFF"/>
-          <rect x="10" y="8" width="12" height="16" rx="2" fill="#2D9F5F"/>
-          <line x1="13" y1="13" x2="19" y2="13" stroke="#FFF" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="13" y1="16" x2="19" y2="16" stroke="#FFF" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="13" y1="19" x2="17" y2="19" stroke="#FFF" stroke-width="1.5" stroke-linecap="round"/>
-        </g>
-
-        <!-- Sombra base -->
-        <ellipse class="op-art-shadow" cx="170" cy="175" rx="55" ry="12" fill="#000" opacity="0.06"/>
-        
-        <!-- Personaje y Laptop con meneo / respiración suave -->
-        <g class="op-art-person">
-          <path d="M135 180c2-25 15-40 35-40s33 15 35 40z" fill="url(#opGradSun)"/>
-          <circle cx="170" cy="108" r="18" fill="#F8C8A5"/>
-          <path d="M155 106c0-12 10-20 22-18 8 1 14 7 14 15-4-3-10-4-16-2-4 1-9 5-11 8-3-2-6-3-9-3z" fill="#2C231D"/>
-          <path d="M148 160l14-10h16l14 10" stroke="#F8C8A5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-          <rect x="150" y="132" width="40" height="25" rx="3" fill="#2A2A38" filter="url(#opShadow)"/>
-          <rect x="154" y="135" width="32" height="18" rx="1.5" fill="#E3F1FB"/>
-          <path d="M140 157h60l-5 6h-50z" fill="#3E3E4E"/>
-          <circle cx="170" cy="144" r="3" fill="#0A74C2"/>
-        </g>
-      </svg>
+    <div class="opb-art" aria-hidden="true">
+      <div class="opb-stage">
+        <svg class="opb-blob" viewBox="0 0 820 690" preserveAspectRatio="none">
+          <defs><linearGradient id="opbG1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--opb-b1)"/><stop offset="1" style="stop-color:var(--opb-b2)"/></linearGradient></defs>
+          <path d="M120 150C170 60 330 20 470 40S740 20 800 170 790 450 760 560 640 690 420 680 90 690 40 560 60 240 120 150Z" fill="url(#opbG1)"/>
+          <path d="M300 120C420 60 640 90 700 220S720 520 600 600 300 650 200 540 200 170 300 120Z" fill="#fff" opacity=".28"/>
+        </svg>
+        <div class="opb-floor"></div>
+        <svg class="opb-lines" viewBox="0 0 820 690">
+          <path d="M158 245C150 215 170 195 198 182"/><path d="M332 150C360 120 400 110 436 112"/>
+          <path d="M586 116C620 125 640 150 646 172"/><path d="M232 345C300 365 330 360 330 410"/>
+          <path d="M640 470C632 440 620 425 596 420"/>
+          <line x1="535" y1="262" x2="545" y2="232"/><line x1="550" y1="290" x2="578" y2="276" style="animation-delay:.5s"/><line x1="552" y1="318" x2="586" y2="320" style="animation-delay:1s"/>
+        </svg>
+        <img class="opb-plant" src="imagen/planta.webp" width="600" height="909" alt="" loading="lazy" decoding="async">
+        <img class="opb-person" src="imagen/persona-laptop.webp" width="1100" height="958" alt="" loading="lazy" decoding="async">
+        <img class="opb-mug" src="imagen/taza.webp" width="640" height="578" alt="" loading="lazy" decoding="async">
+      </div>
+      <ul class="opb-cards"><li class="opb-card c1"><span class="opb-ic i-blue"><i class="fas fa-file-lines"></i></span><span class="opb-tx"><b>Crea tu perfil</b><small>Destaca tus habilidades</small></span></li><li class="opb-card c2"><span class="opb-ic i-purple"><i class="fas fa-graduation-cap"></i></span><span class="opb-tx"><b>Capacítate</b><small>Mejora tus oportunidades</small></span></li><li class="opb-card c3"><span class="opb-ic i-orange"><i class="fas fa-briefcase"></i></span><span class="opb-tx"><b>Postula</b><small>Da el siguiente paso</small></span></li><li class="opb-card c4"><span class="opb-ic i-blue"><i class="fas fa-users"></i></span><span class="opb-tx"><b>Conecta</b><small>Con empresas de tu comunidad</small></span></li><li class="opb-card c5"><span class="opb-ic i-green"><i class="fas fa-search"></i></span><span class="opb-tx"><b>Busca empleos</b><small>Encuentra vacantes cerca de ti</small></span></li></ul>
     </div>
   </div>
 
