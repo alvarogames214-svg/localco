@@ -1,5 +1,5 @@
 /* Conexión Local — Service Worker */
-const CACHE_NAME = 'conexion-local-v19'; // ← sube la versión para forzar actualización
+const CACHE_NAME = 'conexion-local-v20'; // ← sube la versión para forzar actualización
 const APP_SHELL = [
   './',
   './index.html',
